@@ -1,25 +1,16 @@
 
 import inventoryActions from './inventoryActions';
 import purchasesActions from './purchasesActions';
-import appState from './appState';
+import appStateActions from './appStateActions';
+import modalsActions from './modalsActions';
+import braintreeActions from './braintreeActions';
 
 const actions ={
    inventoryActions,
    purchasesActions,
-   appState
+   appStateActions,
+   modalsActions,
+   braintreeActions
 };
 
-const logger = createLogger();
-const sagaMiddleware = createSagaMiddleware();
-const promiseMiddleware = createPromiseMiddleware();
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-export const store = createStore(
-    rootReducer,
-    defaultState, composeEnhancers(
-        applyMiddleware(
-            promiseMiddleware, sagaMiddleware,
-            logger,
-        ))
-);
 export default actions;

@@ -4,6 +4,6 @@ export default function locations(purchases = {}, action) {
     switch (action.type) {
         
         default:
-            return inventory;
+            return purchases;
     }
 }

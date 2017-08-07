@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "stripe-example",
+    "name": "payments-example-client",
     "description": "No description",
     "slug": "stripe-example",
     "privacy": "public",

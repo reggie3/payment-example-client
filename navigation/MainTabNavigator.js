@@ -5,17 +5,17 @@ import { TabNavigator, TabBarBottom } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
-import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import ViewInventoryScreen from '../Pages/ViewInventoryScreen';
+import PurchasesScreen from '../Pages/PurchasesScreen';
+import SettingsScreen from '../Pages/SettingsScreen';
 
 export default TabNavigator(
   {
-    Home: {
-      screen: HomeScreen,
+    ViewInventory: {
+      screen: ViewInventoryScreen,
     },
-    Links: {
-      screen: LinksScreen,
+    Purchases: {
+      screen: PurchasesScreen,
     },
     Settings: {
       screen: SettingsScreen,
@@ -27,15 +27,15 @@ export default TabNavigator(
         const { routeName } = navigation.state;
         let iconName;
         switch (routeName) {
-          case 'Home':
+          case 'ViewInventory':
             iconName = Platform.OS === 'ios'
               ? `ios-information-circle${focused ? '' : '-outline'}`
-              : 'md-information-circle';
+              : 'md-cash';
             break;
-          case 'Links':
+          case 'Purchases':
             iconName = Platform.OS === 'ios'
               ? `ios-link${focused ? '' : '-outline'}`
-              : 'md-link';
+              : 'md-list';
             break;
           case 'Settings':
             iconName = Platform.OS === 'ios'
