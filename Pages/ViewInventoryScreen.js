@@ -64,8 +64,10 @@ class ViewInventoryScreen extends React.Component {
   };
 
   purchaseItem = item => {
-    this.props.dispatch(actions.modalsActions.showPaymentModal(item));
-    this.props.dispatch(actions.braintreeActions.getClientToken());
+    this.props.dispatch(actions.navActions.navigateTo('BraintreePaymentScreen'));
+
+    // this.props.dispatch(actions.modalsActions.showPaymentModal(item));
+    //this.props.dispatch(actions.braintreeActions.getClientToken());
   };
 
   render() {

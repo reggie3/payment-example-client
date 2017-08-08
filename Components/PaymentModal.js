@@ -28,7 +28,7 @@ class PaymentModal extends React.Component {
   purchaseItem = ()=>{
     this.props.dispatch(actions.braintreeActions.purchaseItem(
       this.state.cardInfo,
-      this.props.item
+      this.props.showPaymentModal.item
     ))
   }
   render() {
@@ -61,7 +61,7 @@ class PaymentModal extends React.Component {
 
 const mapStateToProps = state => {
   return Object.assign({}, {
-    item: state.paymentModal.item
+    showPaymentModal: state.showPaymentModal
   });
 };
 

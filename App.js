@@ -1,16 +1,28 @@
 import React from "react";
-import { Platform, StatusBar, StyleSheet, View } from "react-native";
+import {
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+  BackHandler
+} from "react-native";
 import { AppLoading, Asset, Font } from "expo";
 import { Ionicons } from "@expo/vector-icons";
-import AppNavigator from "./navigation/AppNavigator";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import PendingModal from "./Components/PendingModal";
 import ErrorModal from "./Components/ErrorModal";
 import SuccessModal from "./Components/SuccessModal";
-import BraintreePaymentModal from "./Components/BraintreePaymentModal";
+import PaymentModal from "./Components/PaymentModal";
+import BraintreePaymentScreen from "./Pages/BraintreePaymentScreen";
+import ViewInventory from "./Pages/ViewInventoryScreen";
 import { connect } from "react-redux";
 import actions from "./actions/actions";
+
+const screens = {
+  Home: { screen: <ViewInventory />, default: true },
+  BraintreePaymentScreen: { screen: <BraintreePaymentScreen />, default: true }
+};
 
 class AppComponent extends React.Component {
   state = {
@@ -19,6 +31,13 @@ class AppComponent extends React.Component {
 
   componentWillMount() {
     this._loadAssetsAsync();
+    BackHandler.addEventListener("hardwareBackPress", ()=> {
+      if (this.props.nav.currentScreen !== "Home") {
+        this.props.dispatch(actions.navActions.navigateBack());
+        return true;
+      }
+      return false;
+    });
   }
 
   closeSuccessDialog() {
@@ -31,6 +50,7 @@ class AppComponent extends React.Component {
   closePaymentModal() {
     this.props.dispatch(actions.modalsActions.closePaymentModal());
   }
+
   render() {
     if (!this.state.assetsAreLoaded && !this.props.skipLoadingScreen) {
       return <AppLoading />;
@@ -41,12 +61,13 @@ class AppComponent extends React.Component {
             {Platform.OS === "ios" && <StatusBar barStyle="default" />}
             {Platform.OS === "android" &&
               <View style={styles.statusBarUnderlay} />}
-            <AppNavigator
-              navigation={addNavigationHelpers({
-                dispatch: this.props.dispatch,
-                state: this.props.nav
-              })}
-            />
+            <View
+              style={{
+                flex: 1
+              }}
+            >
+              {screens[this.props.nav.currentScreen].screen}
+            </View>
             <PendingModal
               visible={this.props.showPendingDialog.open}
               message={this.props.showPendingDialog.message}
@@ -60,10 +81,6 @@ class AppComponent extends React.Component {
               visible={this.props.showSuccessDialog.open}
               message={this.props.showSuccessDialog.message}
               setVisible={this.closeSuccessDialog.bind(this)}
-            />
-            <BraintreePaymentModal
-              visible={this.props.showPaymentModal.open}
-              setVisible={this.closePaymentModal.bind(this)}
             />
           </View>
         </Provider>

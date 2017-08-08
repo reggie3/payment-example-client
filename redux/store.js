@@ -30,14 +30,8 @@ export let defaultState = {
     }
   },
   nav: {
-    index: 0,
-    routes: [
-      {
-        key: "",
-        routeName: "Main",
-        type: undefined
-      }
-    ]
+   currentScreen: "Home",
+   screenStack: ["Home"]
   }
 };
 
@@ -57,3 +51,5 @@ sagaMiddleware.run(MySagas.sagaShowPendingDialog);
 //sagaMiddleware.run(MySagas.sagaHidePendingDialog);
 sagaMiddleware.run(MySagas.sagaShowErrorDialog);
 sagaMiddleware.run(MySagas.sagaShowSuccessDialog);
+sagaMiddleware.run(MySagas.sagaShowPurchaseModal);
+

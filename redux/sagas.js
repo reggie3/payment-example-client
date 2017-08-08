@@ -57,25 +57,25 @@ export function* sagaShowPendingDialog() {
 }
 
 /****
- * hide pending dialog
+ * show purchase modal
  * 
  */
-/* function* hidePendingDialog(action) {
+function* showPurchaseModal(action) {
   try {
+      debugger;
     yield put({
-      type: "CLOSE_PENDING_DIALOG",
-      message: (action.payload && action.payload.message) ? action.payload.message : console.log(action),
-      title: "Error"
+      type: "SHOW_PURCHASE_MODAL",
+      item: action.item
     });
   } catch (e) {
-    yield console.log('ERROR: hidePendingDialog %j', e);
+    yield console.log('ERROR: showPurchaseModal %j', e);
   }
 }
 
-export function* sagaHidePendingDialog() {
-  yield* takeEvery(['POST_INVENTORY_ITEM_FULFILLED', 'POST_INVENTORY_ITEM_REJECTED'
-  ], hidePendingDialog);
-} */
+export function* sagaShowPurchaseModal() {
+  yield* takeEvery(['GET_CLIENT_TOKEN_FULFILLED'
+  ], showPurchaseModal);
+}
 
 /****
  * show error dialog
