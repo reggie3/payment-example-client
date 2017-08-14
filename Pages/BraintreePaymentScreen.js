@@ -84,13 +84,7 @@ class BraintreePaymentScreen extends React.Component {
             style={{ flex: 1 }}
             onMessage={this.onMessage}
             javaScriptEnabled={true}
-            injectedJavaScript={`
-              alertTest();
-              document.querySelector('#clientToken').innerHTML = "${this.state
-                .clientToken}";
-              clientToken="${this.state.clientToken}";
-              initBraintreeDropin("${this.state.clientToken}");
-              `}
+            injectedJavaScript={paymentJS}
           />
         )}
       </View>
