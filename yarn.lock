@@ -2,6 +2,18 @@
 # yarn lockfile v1
 
 
+"@braintree/browser-detection@1.6.0", "@braintree/browser-detection@^1.5.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@braintree/browser-detection/-/browser-detection-1.6.0.tgz#92b382db04a7ce8915c75e5350e5a77fc111edb4"
+
+"@braintree/iframer@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@braintree/iframer/-/iframer-1.0.3.tgz#21dd1fd4cebd4154aeab1efa4d5b0d5f4384364e"
+
+"@braintree/wrap-promise@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@braintree/wrap-promise/-/wrap-promise-1.1.1.tgz#d22c76855e6d4b4012610060421fae1a37ec90b0"
+
 "@expo/samples@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@expo/samples/-/samples-2.0.2.tgz#66f301124039f9cb53dd685d56814ca3931ca493"
@@ -1039,6 +1051,20 @@ braces@^1.8.2:
     preserve "^0.2.0"
     repeat-element "^1.1.2"
 
+braintree-web@^3.21.1:
+  version "3.22.0"
+  resolved "https://registry.yarnpkg.com/braintree-web/-/braintree-web-3.22.0.tgz#c2e8c0d3282e30ce8c6ed99614fdccb328b98935"
+  dependencies:
+    "@braintree/browser-detection" "1.6.0"
+    "@braintree/iframer" "1.0.3"
+    "@braintree/wrap-promise" "1.1.1"
+    card-validator "4.1.0"
+    credit-card-type "5.0.3"
+    framebus "2.0.8"
+    inject-stylesheet "1.0.0"
+    promise-polyfill "6.0.2"
+    restricted-input "1.2.5"
+
 browser-resolve@^1.11.2:
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/browser-resolve/-/browser-resolve-1.11.2.tgz#8ff09b0a2c421718a1051c260b32e48f442938ce"
@@ -1090,6 +1116,12 @@ camelcase@^3.0.0:
 camelcase@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
+
+card-validator@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/card-validator/-/card-validator-4.1.0.tgz#1d60ef09dad06432e6c2c0bbc63383ffc126b0e8"
+  dependencies:
+    credit-card-type "^5.0.0"
 
 card-validator@^2.2.0:
   version "2.3.0"
@@ -1336,6 +1368,10 @@ create-react-class@^15.5.2, create-react-class@^15.5.3:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
+credit-card-type@5.0.3, credit-card-type@^5.0.0:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/credit-card-type/-/credit-card-type-5.0.3.tgz#2122f0191920e278c15518dd43ef3abb3f69359d"
+
 credit-card-type@^4.0.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/credit-card-type/-/credit-card-type-4.1.0.tgz#c6f4688fed64b2d85589d7c49e4bec405b0fa3b0"
@@ -1565,6 +1601,10 @@ etag@~1.7.0:
 event-target-shim@^1.0.5:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-1.1.1.tgz#a86e5ee6bdaa16054475da797ccddf0c55698491"
+
+events@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
 
 exec-sh@^0.2.0:
   version "0.2.0"
@@ -1802,6 +1842,10 @@ form-data@~2.1.1:
     asynckit "^0.4.0"
     combined-stream "^1.0.5"
     mime-types "^2.1.12"
+
+framebus@2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/framebus/-/framebus-2.0.8.tgz#01c7ee5f765beb3f9a2e0390ca0b7088b2bf76d3"
 
 fresh@0.3.0:
   version "0.3.0"
@@ -2061,6 +2105,10 @@ inflight@^1.0.4:
 inherits@2, inherits@^2.0.3, inherits@~2.0.1, inherits@~2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
+
+inject-stylesheet@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/inject-stylesheet/-/inject-stylesheet-1.0.0.tgz#f673047458ee58f109fee4cfb66b09f362ccc261"
 
 inquirer@3.0.6:
   version "3.0.6"
@@ -3567,6 +3615,10 @@ process@~0.5.1:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/process/-/process-0.5.2.tgz#1638d8a8e34c2f440a91db95ab9aeb677fc185cf"
 
+promise-polyfill@6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/promise-polyfill/-/promise-polyfill-6.0.2.tgz#d9c86d3dc4dc2df9016e88946defd69b49b41162"
+
 promise@^7.1.1:
   version "7.3.1"
   resolved "https://registry.yarnpkg.com/promise/-/promise-7.3.1.tgz#064b72602b18f90f29192b8b1bc418ffd1ebd3bf"
@@ -3746,6 +3798,12 @@ react-native-vector-icons@^4.3.0:
     lodash "^4.0.0"
     prop-types "^15.5.10"
     yargs "^8.0.2"
+
+react-native-webview-messaging@^0.4.1-2:
+  version "0.4.1-2"
+  resolved "https://registry.yarnpkg.com/react-native-webview-messaging/-/react-native-webview-messaging-0.4.1-2.tgz#97e7326b45657d40eb75e61322ea7e8a4b3cdcb5"
+  dependencies:
+    events "^1.1.1"
 
 "react-native@https://github.com/expo/react-native/archive/sdk-19.0.0.tar.gz":
   version "0.46.1"
@@ -4034,6 +4092,10 @@ remove-trailing-separator@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/remove-trailing-separator/-/remove-trailing-separator-1.0.2.tgz#69b062d978727ad14dc6b56ba4ab772fd8d70511"
 
+render-if@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/render-if/-/render-if-0.1.1.tgz#f255a47bf973814ac077735b994b95fa3d1cd42e"
+
 repeat-element@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/repeat-element/-/repeat-element-1.1.2.tgz#ef089a178d1483baae4d93eb98b4f9e4e11d990a"
@@ -4114,6 +4176,12 @@ restore-cursor@^2.0.0:
   dependencies:
     onetime "^2.0.0"
     signal-exit "^3.0.2"
+
+restricted-input@1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/restricted-input/-/restricted-input-1.2.5.tgz#e4e430b909f1e22afa41c5171904c6fc167e5e2a"
+  dependencies:
+    "@braintree/browser-detection" "^1.5.0"
 
 right-align@^0.1.1:
   version "0.1.3"
