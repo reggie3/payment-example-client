@@ -4,7 +4,7 @@ export default (html = `
   <script src="https://js.braintreegateway.com/web/dropin/1.6.0/js/dropin.min.js"></script>
 </head>
 
-<body onload="init()">
+<body>
   <div id="dropin-container"></div>
   <button id="submit-button">Request payment method</button>
   <button id="sendMessage-button">Send Message</button>

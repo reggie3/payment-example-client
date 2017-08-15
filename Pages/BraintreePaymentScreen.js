@@ -84,7 +84,16 @@ class BraintreePaymentScreen extends React.Component {
             style={{ flex: 1 }}
             onMessage={this.onMessage}
             javaScriptEnabled={true}
-            injectedJavaScript={paymentJS}
+            injectedJavaScript={`
+
+              document.querySelector('#sendMessage-button').addEventListener('click', function () {
+                  window.postMessage({data: "First"}, '*');
+                  alert("${this.state.clientToken}");
+              });
+            
+              alert("in javascript");
+
+            `}
           />
         )}
       </View>
