@@ -1,6 +1,7 @@
 import RNMessageChannel from "react-native-webview-messaging";
 
 var button = document.querySelector("#submit-button");
+const messagesContainer = document.querySelector("p");
 
 function CreateBraintreeDropin(clientToken) {
   braintree.dropin.create(
@@ -12,6 +13,7 @@ function CreateBraintreeDropin(clientToken) {
       if (createErr) {
         alert(createErr);
       } else {
+        alert(instance);
         button.addEventListener("click", function() {
           alert("button clicked");
           instance.requestPaymentMethod(function(err, payload) {
@@ -34,30 +36,9 @@ RNMessageChannel.on("json", text => {
   )}`;
 });
 
-RNMessageChannel.on("text", text => {
-  messagesContainer.innerHTML = `Received text from RN: ${text}`;
+RNMessageChannel.on("tokenReceived", event => {
+  alert(`Received json from RN: ${JSON.stringify(event)}`);
+  messagesContainer.innerHTML = `Received "greetingFromRN" event: ${JSON.stringify(
+    event
+  )}`;
 });
-
-/* helloBtn.addEventListener('click', () => {
-  RNMessageChannel.send('hello');
-});
-
-jsonBtn.addEventListener('click', () => {
-  RNMessageChannel.sendJSON({
-    payload: 'hello'
-  });
-});
-
-eventBtn.addEventListener('click', () => {
-  RNMessageChannel.emit('greetingFromWebview', {
-    payload: 'hello'
-  });
-});
-
-
-
-
-
-RNMessageChannel.on('greetingFromRN', event => {
-  messagesContainer.innerHTML = `Received "greetingFromRN" event: ${JSON.stringify(event)}`;
-}); */

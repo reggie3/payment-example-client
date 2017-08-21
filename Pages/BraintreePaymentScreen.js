@@ -9,7 +9,7 @@ import {
 import * as brainTreeUtils from "../utils/braintreeUtils";
 import renderIf from "render-if";
 import { globalStyles } from "../globals/styles";
-import BraintreeWebview from '../Components/BraintreeWebview';
+import BraintreePaymentWebview from "../Components/BraintreePaymentWebview";
 
 export default class BraintreePaymentScreen extends React.Component {
   constructor() {
@@ -18,6 +18,18 @@ export default class BraintreePaymentScreen extends React.Component {
       clientToken: null
     };
   }
+
+  componentDidMount = () => {
+    brainTreeUtils.getClientToken().then(response => {
+      // console.log({ response });
+      if (response.type === "success") {
+        let clientToken = response.response.result.clientToken;
+        this.setState({
+          clientToken
+        });
+      }
+    });
+  };
 
   render() {
     return (
@@ -30,43 +42,11 @@ export default class BraintreePaymentScreen extends React.Component {
           />
         )}
         {renderIf(this.state.clientToken !== null)(
-          <BraintreeWebview
-            clientToken={this.state.clientToken}/>
+          <BraintreePaymentWebview clientToken={this.state.clientToken} />
         )}
       </View>
     );
   }
-
-  _refWebView = webview => {
-    this.webview = webview;
-  };
-
-  componentDidMount = () => {
-    brainTreeUtils.getClientToken().then(response => {
-      // console.log({ response });
-      if (response.type === "success") {
-        debugger;
-        let clientToken = response.response.result.clientToken;
-        this.setState({
-          clientToken
-        });
-      }
-    });
-  };
-
-
-
-  /* sendHelloToWebView = () => {
-    this.webview.send("hello");
-  };
-
-  sendJsonToWebView = () => {
-    this.webview.sendJSON({ payload: "hello" });
-  };
-
-  emitGreetingEventToWebView = () => {
-    this.webview.emit("greetingFromRN", { payload: "hello" });
-  }; */
 }
 
 const styles = StyleSheet.create(
