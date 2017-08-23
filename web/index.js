@@ -1,44 +1,34 @@
-import RNMessageChannel from "react-native-webview-messaging";
+import RNMessageChannel from 'react-native-webview-messaging';
 
-var button = document.querySelector("#submit-button");
-const messagesContainer = document.querySelector("p");
+const helloBtn = document.querySelector('#hello');
+const jsonBtn = document.querySelector('#json');
+const eventBtn = document.querySelector('#event');
+const messagesContainer = document.querySelector('p');
 
-function CreateBraintreeDropin(clientToken) {
-  braintree.dropin.create(
-    {
-      authorization: clientToken,
-      container: "#dropin-container"
-    },
-    function(createErr, instance) {
-      if (createErr) {
-        alert(createErr);
-      } else {
-        alert(instance);
-        button.addEventListener("click", function() {
-          alert("button clicked");
-          instance.requestPaymentMethod(function(err, payload) {
-            if (err) {
-              alert(err);
-            } else {
-              alert(payload);
-            }
-          });
-        });
-      }
-    }
-  );
-}
-
-RNMessageChannel.on("json", text => {
-  alert(`Received json from RN: ${JSON.stringify(text)}`);
-  messagesContainer.innerHTML = `Received json from RN: ${JSON.stringify(
-    text
-  )}`;
+helloBtn.addEventListener('click', () => {
+  RNMessageChannel.send('hello');
 });
 
-RNMessageChannel.on("tokenReceived", event => {
-  alert(`Received json from RN: ${JSON.stringify(event)}`);
-  messagesContainer.innerHTML = `Received "greetingFromRN" event: ${JSON.stringify(
-    event
-  )}`;
+jsonBtn.addEventListener('click', () => {
+  RNMessageChannel.sendJSON({
+    payload: 'hello'
+  });
+});
+
+eventBtn.addEventListener('click', () => {
+  RNMessageChannel.emit('greetingFromWebview', {
+    payload: 'hello'
+  });
+});
+
+RNMessageChannel.on('text', text => {
+  messagesContainer.innerHTML = `Received text from RN: ${text}`;
+});
+
+RNMessageChannel.on('json', text => {
+  messagesContainer.innerHTML = `Received json from RN: ${JSON.stringify(text)}`;
+});
+
+RNMessageChannel.on('greetingFromRN', event => {
+  messagesContainer.innerHTML = `Received "greetingFromRN" event: ${JSON.stringify(event)}`;
 });

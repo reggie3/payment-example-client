@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://js.braintreegateway.com/web/dropin/1.6.1/js/dropin.min.js"></script>
   <title>Document</title>
   <style>
     body {
@@ -13,10 +12,19 @@
   </style>
 </head>
 <body>
-    <div id="dropin-container"></div>
-     <button id="submit-button">Request payment method</button>
+  <div>
+    <button id="hello">Send text to RN</button>
+  </div>
 
-     <p></p>
+  <div>
+    <button id="json">Send json to RN</button>
+  </div>
+
+  <div>
+    <button id="event">Emit greeting event to RN</button>
+  </div>
+
+  <p></p>
 <script type="text/javascript">/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -89,47 +97,37 @@
 "use strict";
 var _reactNativeWebviewMessaging=__webpack_require__(1);var _reactNativeWebviewMessaging2=_interopRequireDefault(_reactNativeWebviewMessaging);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
 
-var button=document.querySelector("#submit-button");
-var messagesContainer=document.querySelector("p");
+var helloBtn=document.querySelector('#hello');
+var jsonBtn=document.querySelector('#json');
+var eventBtn=document.querySelector('#event');
+var messagesContainer=document.querySelector('p');
 
-function CreateBraintreeDropin(clientToken){
-braintree.dropin.create(
-{
-authorization:clientToken,
-container:"#dropin-container"},
-
-function(createErr,instance){
-if(createErr){
-alert(createErr);
-}else{
-alert(instance);
-button.addEventListener("click",function(){
-alert("button clicked");
-instance.requestPaymentMethod(function(err,payload){
-if(err){
-alert(err);
-}else{
-alert(payload);
-}
-});
-});
-}
+helloBtn.addEventListener('click',function(){
+_reactNativeWebviewMessaging2.default.send('hello');
 });
 
-}
-
-_reactNativeWebviewMessaging2.default.on("json",function(text){
-alert("Received json from RN: "+JSON.stringify(text));
-messagesContainer.innerHTML="Received json from RN: "+JSON.stringify(
-text);
+jsonBtn.addEventListener('click',function(){
+_reactNativeWebviewMessaging2.default.sendJSON({
+payload:'hello'});
 
 });
 
-_reactNativeWebviewMessaging2.default.on("tokenReceived",function(event){
-alert("Received json from RN: "+JSON.stringify(event));
-messagesContainer.innerHTML="Received \"greetingFromRN\" event: "+JSON.stringify(
-event);
+eventBtn.addEventListener('click',function(){
+_reactNativeWebviewMessaging2.default.emit('greetingFromWebview',{
+payload:'hello'});
 
+});
+
+_reactNativeWebviewMessaging2.default.on('text',function(text){
+messagesContainer.innerHTML='Received text from RN: '+text;
+});
+
+_reactNativeWebviewMessaging2.default.on('json',function(text){
+messagesContainer.innerHTML='Received json from RN: '+JSON.stringify(text);
+});
+
+_reactNativeWebviewMessaging2.default.on('greetingFromRN',function(event){
+messagesContainer.innerHTML='Received "greetingFromRN" event: '+JSON.stringify(event);
 });
 
 /***/ }),
