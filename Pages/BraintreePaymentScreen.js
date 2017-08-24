@@ -42,14 +42,7 @@ export default class BraintreePaymentScreen extends React.Component {
           />
         )}
         {renderIf(this.state.clientToken !== null)(
-          <View
-            style={{
-              backgroundColor: 'lightblue',
-              padding: 10
-            }}
-          >
-            <BraintreePaymentWebview clientToken={this.state.clientToken} />
-          </View>
+          <BraintreePaymentWebview clientToken={this.state.clientToken} />
         )}
       </View>
     );

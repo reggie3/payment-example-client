@@ -1291,7 +1291,16 @@ braces@^1.8.2:
     preserve "^0.2.0"
     repeat-element "^1.1.2"
 
-braintree-web@^3.21.1:
+braintree-web-drop-in@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/braintree-web-drop-in/-/braintree-web-drop-in-1.6.1.tgz#15c82692270cf69172f178d32e3eef5192b622de"
+  dependencies:
+    "@braintree/browser-detection" "1.6.0"
+    "@braintree/wrap-promise" "1.1.1"
+    braintree-web "3.22.0"
+    promise-polyfill "6.0.2"
+
+braintree-web@3.22.0, braintree-web@^3.21.1:
   version "3.22.0"
   resolved "https://registry.yarnpkg.com/braintree-web/-/braintree-web-3.22.0.tgz#c2e8c0d3282e30ce8c6ed99614fdccb328b98935"
   dependencies:

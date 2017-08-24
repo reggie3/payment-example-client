@@ -17,6 +17,7 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
     "braintree-web": "^3.21.1",
+    "braintree-web-drop-in": "^1.6.1",
     "expo": "^19.0.0",
     "html-webpack-inline-source-plugin": "^0.0.9",
     "html-webpack-plugin": "^2.28.0",
