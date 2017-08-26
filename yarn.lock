@@ -10,6 +10,10 @@
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@braintree/iframer/-/iframer-1.0.3.tgz#21dd1fd4cebd4154aeab1efa4d5b0d5f4384364e"
 
+"@braintree/sanitize-url@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@braintree/sanitize-url/-/sanitize-url-2.0.0.tgz#ba8d1f6f96986c2a3e956b62a69091b873225851"
+
 "@braintree/wrap-promise@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@braintree/wrap-promise/-/wrap-promise-1.1.1.tgz#d22c76855e6d4b4012610060421fae1a37ec90b0"
@@ -1300,7 +1304,7 @@ braintree-web-drop-in@^1.6.1:
     braintree-web "3.22.0"
     promise-polyfill "6.0.2"
 
-braintree-web@3.22.0, braintree-web@^3.21.1:
+braintree-web@3.22.0:
   version "3.22.0"
   resolved "https://registry.yarnpkg.com/braintree-web/-/braintree-web-3.22.0.tgz#c2e8c0d3282e30ce8c6ed99614fdccb328b98935"
   dependencies:
@@ -1309,6 +1313,21 @@ braintree-web@3.22.0, braintree-web@^3.21.1:
     "@braintree/wrap-promise" "1.1.1"
     card-validator "4.1.0"
     credit-card-type "5.0.3"
+    framebus "2.0.8"
+    inject-stylesheet "1.0.0"
+    promise-polyfill "6.0.2"
+    restricted-input "1.2.5"
+
+braintree-web@^3.22.2:
+  version "3.22.2"
+  resolved "https://registry.yarnpkg.com/braintree-web/-/braintree-web-3.22.2.tgz#1745c56235decf3f9f6487f78bb6b843c7c078fb"
+  dependencies:
+    "@braintree/browser-detection" "1.6.0"
+    "@braintree/iframer" "1.0.3"
+    "@braintree/sanitize-url" "2.0.0"
+    "@braintree/wrap-promise" "1.1.1"
+    card-validator "4.1.0"
+    credit-card-type "5.0.4"
     framebus "2.0.8"
     inject-stylesheet "1.0.0"
     promise-polyfill "6.0.2"
@@ -1782,6 +1801,10 @@ create-react-class@^15.5.2, create-react-class@^15.5.3:
 credit-card-type@5.0.3, credit-card-type@^5.0.0:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/credit-card-type/-/credit-card-type-5.0.3.tgz#2122f0191920e278c15518dd43ef3abb3f69359d"
+
+credit-card-type@5.0.4:
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/credit-card-type/-/credit-card-type-5.0.4.tgz#2dd9df280411ce2bb91ed95ac31e814605717aed"
 
 credit-card-type@^4.0.0:
   version "4.1.0"

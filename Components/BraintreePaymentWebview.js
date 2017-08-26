@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View, Button } from "react-native";
-import { WebView } from "react-native-webview-messaging/WebView";
+import { WebView } from "./rnwm-webview";
+import * as brainTreeUtils from "../utils/braintreeUtils";
 
 export default class App extends React.Component {
   constructor() {
@@ -28,14 +29,32 @@ export default class App extends React.Component {
     this.webview = webview;
   };
 
+  onMessage = event => {
+    const { data } = event.nativeEvent;
+    console.log({ data });
+  };
   componentDidMount() {
     const { messagesChannel } = this.webview;
 
-
+    messagesChannel.on("json", json => {
+      if (json.type === "success") {
+        console.log(`${json.payload}`);
+        brainTreeUtils
+          .postPurchase(json.payload.nonce, "10.00")
+          .then(response => {
+            console.log({ response });
+            if (response.type === "success") {
+              debugger;
+            }
+          });
+      } else {
+        alert(`payment error:
+        ${json.err}`);
+      }
+    });
   }
 
   sendClientTokenToWebView = () => {
-    debugger;
     this.webview.sendJSON({ clientToken: this.props.clientToken });
   };
 }

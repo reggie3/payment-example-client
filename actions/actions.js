@@ -5,6 +5,7 @@ import appStateActions from './appStateActions';
 import modalsActions from './modalsActions';
 import braintreeActions from './braintreeActions';
 import navActions from './navActions';
+import cartActions from './cartActions';
 
 const actions ={
    inventoryActions,
@@ -12,7 +13,8 @@ const actions ={
    appStateActions,
    modalsActions,
    braintreeActions,
-   navActions
+   navActions,
+   cartActions
 };
 
 export default actions;

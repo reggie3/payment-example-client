@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import actions from "../actions/actions";
-import { TouchableHighlight, View, FlatList, Text } from "react-native";
+import { TouchableHighlight, View, FlatList, Text, Button } from "react-native";
 
 const ListItem = props => {
   return (
@@ -63,24 +63,30 @@ class ViewInventoryScreen extends React.Component {
     this.props.dispatch(actions.inventoryActions.getInventory());
   };
 
-  purchaseItem = item => {
-    this.props.dispatch(actions.navActions.navigateTo('BraintreePaymentScreen'));
+  addToCart = item => {
+    this.props.dispatch(actions.cartActions.addToCart(item));
+  };
+
+  makePurchase = () => {
+    this.props.dispatch(
+      actions.navActions.navigateTo("BraintreePaymentScreen")
+    );
 
     // this.props.dispatch(actions.modalsActions.showPaymentModal(item));
-    //this.props.dispatch(actions.braintreeActions.getClientToken());
+    // this.props.dispatch(actions.braintreeActions.getClientToken());
   };
 
   render() {
     if (this.props.inventory.length < 1) {
-       <View
-          style={{
-            flex: 1,
-            backgroundColor: "#eee",
-            padding: 5
-          }}
-        >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#eee",
+          padding: 5
+        }}
+      >
         <Text>Loading</Text>
-        </View>
+      </View>;
       return null;
     } else {
       return (
@@ -101,8 +107,17 @@ class ViewInventoryScreen extends React.Component {
                 name={item.name}
                 price={item.price}
                 description={item.description}
-                onPress={this.purchaseItem.bind(this, item)}
+                onPress={this.addToCart.bind(this, item)}
               />}
+          />
+          <View>
+            <Text>Cart</Text>
+          </View>
+          <Button
+            onPress={this.makePurchase}
+            title="Purchase"
+            color="#841584"
+            accessibilityLabel="Purchase Items"
           />
         </View>
       );

@@ -21,7 +21,7 @@ class RNMessagesChannel extends EventEmitter {
     if (fromRN) {
       return;
     }
-    debugger;
+
     window.postMessage(JSON.stringify({
       type: 'event',
       meta: {

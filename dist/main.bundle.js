@@ -2149,6 +2149,9 @@ then(function(instance){
 button.addEventListener("click",function(){
 instance.requestPaymentMethod(function(err,payload){
 
+alert("payload: "+JSON.stringify(payload));
+_reactNativeWebviewMessaging2.default.sendJSON({
+payload:payload});
 
 });
 });
@@ -2164,39 +2167,351 @@ console.error(err);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _typeof=typeof Symbol==="function"&&typeof(typeof Symbol==="function"?Symbol.iterator:"@@iterator")==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol&&obj!==(typeof Symbol==="function"?Symbol.prototype:"@@prototype")?"symbol":typeof obj;};!function(e,t){"object"==( false?"undefined":_typeof(exports))&&"object"==( false?"undefined":_typeof(module))?module.exports=t(): true?!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (t),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):"object"==(typeof exports==="undefined"?"undefined":_typeof(exports))?exports["react-native-webview-messaging"]=t():e["react-native-webview-messaging"]=t();}(undefined,function(){return function(e){function t(r){if(n[r])return n[r].exports;var i=n[r]={i:r,l:!1,exports:{}};return e[r].call(i.exports,i,i.exports,t),i.l=!0,i.exports;}var n={};return t.m=e,t.c=n,t.i=function(e){return e;},t.d=function(e,n,r){t.o(e,n)||Object.defineProperty(e,n,{configurable:!1,enumerable:!0,get:r});},t.n=function(e){var n=e&&e.__esModule?function(){return e.default;}:function(){return e;};return t.d(n,"a",n),n;},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t);},t.p="",t(t.s=1);}([function(e,t,n){"use strict";function r(){this._events=this._events||{},this._maxListeners=this._maxListeners||void 0;}function i(e){return"function"==typeof e;}function s(e){return"number"==typeof e;}function o(e){return"object"===(void 0===e?"undefined":f(e))&&null!==e;}function u(e){return void 0===e;}var f="function"==typeof Symbol&&"symbol"==_typeof(typeof Symbol==="function"?Symbol.iterator:"@@iterator")?function(e){return typeof e==="undefined"?"undefined":_typeof(e);}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==(typeof Symbol==="function"?Symbol.prototype:"@@prototype")?"symbol":typeof e==="undefined"?"undefined":_typeof(e);};e.exports=r,r.EventEmitter=r,r.prototype._events=void 0,r.prototype._maxListeners=void 0,r.defaultMaxListeners=10,r.prototype.setMaxListeners=function(e){if(!s(e)||e<0||isNaN(e))throw TypeError("n must be a positive number");return this._maxListeners=e,this;},r.prototype.emit=function(e){var t,n,r,s,f,l;if(this._events||(this._events={}),"error"===e&&(!this._events.error||o(this._events.error)&&!this._events.error.length)){if((t=arguments[1])instanceof Error)throw t;var a=new Error('Uncaught, unspecified "error" event. ('+t+")");throw a.context=t,a;}if(n=this._events[e],u(n))return!1;if(i(n))switch(arguments.length){case 1:n.call(this);break;case 2:n.call(this,arguments[1]);break;case 3:n.call(this,arguments[1],arguments[2]);break;default:s=Array.prototype.slice.call(arguments,1),n.apply(this,s);}else if(o(n))for(s=Array.prototype.slice.call(arguments,1),l=n.slice(),r=l.length,f=0;f<r;f++){l[f].apply(this,s);}return!0;},r.prototype.addListener=function(e,t){var n;if(!i(t))throw TypeError("listener must be a function");return this._events||(this._events={}),this._events.newListener&&this.emit("newListener",e,i(t.listener)?t.listener:t),this._events[e]?o(this._events[e])?this._events[e].push(t):this._events[e]=[this._events[e],t]:this._events[e]=t,o(this._events[e])&&!this._events[e].warned&&(n=u(this._maxListeners)?r.defaultMaxListeners:this._maxListeners)&&n>0&&this._events[e].length>n&&(this._events[e].warned=!0,console.error("(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.",this._events[e].length),"function"==typeof console.trace&&console.trace()),this;},r.prototype.on=r.prototype.addListener,r.prototype.once=function(e,t){function n(){this.removeListener(e,n),r||(r=!0,t.apply(this,arguments));}if(!i(t))throw TypeError("listener must be a function");var r=!1;return n.listener=t,this.on(e,n),this;},r.prototype.removeListener=function(e,t){var n,r,s,u;if(!i(t))throw TypeError("listener must be a function");if(!this._events||!this._events[e])return this;if(n=this._events[e],s=n.length,r=-1,n===t||i(n.listener)&&n.listener===t)delete this._events[e],this._events.removeListener&&this.emit("removeListener",e,t);else if(o(n)){for(u=s;u-->0;){if(n[u]===t||n[u].listener&&n[u].listener===t){r=u;break;}}if(r<0)return this;1===n.length?(n.length=0,delete this._events[e]):n.splice(r,1),this._events.removeListener&&this.emit("removeListener",e,t);}return this;},r.prototype.removeAllListeners=function(e){var t,n;if(!this._events)return this;if(!this._events.removeListener)return 0===arguments.length?this._events={}:this._events[e]&&delete this._events[e],this;if(0===arguments.length){for(t in this._events){"removeListener"!==t&&this.removeAllListeners(t);}return this.removeAllListeners("removeListener"),this._events={},this;}if(n=this._events[e],i(n))this.removeListener(e,n);else if(n)for(;n.length;){this.removeListener(e,n[n.length-1]);}return delete this._events[e],this;},r.prototype.listeners=function(e){return this._events&&this._events[e]?i(this._events[e])?[this._events[e]]:this._events[e].slice():[];},r.prototype.listenerCount=function(e){if(this._events){var t=this._events[e];if(i(t))return 1;if(t)return t.length;}return 0;},r.listenerCount=function(e,t){return e.listenerCount(t);};},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function");}function i(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=(typeof t==="undefined"?"undefined":_typeof(t))&&"function"!=typeof t?e:t;}function s(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+(typeof t==="undefined"?"undefined":_typeof(t)));e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t);}var o=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r);}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t;};}(),u=function e(t,n,r){null===t&&(t=Function.prototype);var i=Object.getOwnPropertyDescriptor(t,n);if(void 0===i){var s=Object.getPrototypeOf(t);return null===s?void 0:e(s,n,r);}if("value"in i)return i.value;var o=i.get;if(void 0!==o)return o.call(r);},f=n(0),l=function(e){return e&&e.__esModule?e:{default:e};}(f),a=function(e){function t(){return r(this,t),i(this,(t.__proto__||Object.getPrototypeOf(t)).apply(this,arguments));}return s(t,e),o(t,[{key:"sendJSON",value:function value(e){window.postMessage(JSON.stringify({type:"json",payload:e}));}},{key:"send",value:function value(e){window.postMessage(JSON.stringify({type:"text",payload:e}));}},{key:"emit",value:function value(e,n,r){u(t.prototype.__proto__||Object.getPrototypeOf(t.prototype),"emit",this).call(this,e,n),r||window.postMessage(JSON.stringify({type:"event",meta:{eventName:e},payload:n}));}}]),t;}(l.default);window.RNMessagesChannel=new a(),e.exports=window.RNMessagesChannel;}]);});
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(43)(module)))
+var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _get=function get(object,property,receiver){if(object===null)object=Function.prototype;var desc=Object.getOwnPropertyDescriptor(object,property);if(desc===undefined){var parent=Object.getPrototypeOf(object);if(parent===null){return undefined;}else{return get(parent,property,receiver);}}else if("value"in desc){return desc.value;}else{var getter=desc.get;if(getter===undefined){return undefined;}return getter.call(receiver);}};var _events=__webpack_require__(43);var _events2=_interopRequireDefault(_events);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}var
+
+RNMessagesChannel=function(_EventEmitter){_inherits(RNMessagesChannel,_EventEmitter);function RNMessagesChannel(){_classCallCheck(this,RNMessagesChannel);return _possibleConstructorReturn(this,(RNMessagesChannel.__proto__||Object.getPrototypeOf(RNMessagesChannel)).apply(this,arguments));}_createClass(RNMessagesChannel,[{key:'sendJSON',value:function sendJSON(
+json){
+window.postMessage(JSON.stringify({
+type:'json',
+payload:json}));
+
+}},{key:'send',value:function send(
+
+string){
+window.postMessage(JSON.stringify({
+type:'text',
+payload:string}));
+
+}},{key:'emit',value:function emit(
+
+eventName,eventData,fromRN){
+_get(RNMessagesChannel.prototype.__proto__||Object.getPrototypeOf(RNMessagesChannel.prototype),'emit',this).call(this,eventName,eventData);
+
+if(fromRN){
+return;
+}
+
+window.postMessage(JSON.stringify({
+type:'event',
+meta:{
+eventName:eventName},
+
+payload:eventData}));
+
+}}]);return RNMessagesChannel;}(_events2.default);
+
+
+window.RNMessagesChannel=new RNMessagesChannel();
+
+module.exports=window.RNMessagesChannel;
 
 /***/ }),
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-module.exports=function(module){
-if(!module.webpackPolyfill){
-module.deprecate=function(){};
-module.paths=[];
+var _typeof=typeof Symbol==="function"&&typeof(typeof Symbol==='function'?Symbol.iterator:'@@iterator')==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol&&obj!==(typeof Symbol==='function'?Symbol.prototype:'@@prototype')?"symbol":typeof obj;};
 
-if(!module.children)module.children=[];
-Object.defineProperty(module,"loaded",{
-enumerable:true,
-get:function get(){
-return module.l;
-}});
 
-Object.defineProperty(module,"id",{
-enumerable:true,
-get:function get(){
-return module.i;
-}});
 
-module.webpackPolyfill=1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function EventEmitter(){
+this._events=this._events||{};
+this._maxListeners=this._maxListeners||undefined;
 }
-return module;
+module.exports=EventEmitter;
+
+
+EventEmitter.EventEmitter=EventEmitter;
+
+EventEmitter.prototype._events=undefined;
+EventEmitter.prototype._maxListeners=undefined;
+
+
+
+EventEmitter.defaultMaxListeners=10;
+
+
+
+EventEmitter.prototype.setMaxListeners=function(n){
+if(!isNumber(n)||n<0||isNaN(n))
+throw TypeError('n must be a positive number');
+this._maxListeners=n;
+return this;
 };
+
+EventEmitter.prototype.emit=function(type){
+var er,handler,len,args,i,listeners;
+
+if(!this._events)
+this._events={};
+
+
+if(type==='error'){
+if(!this._events.error||
+isObject(this._events.error)&&!this._events.error.length){
+er=arguments[1];
+if(er instanceof Error){
+throw er;
+}else{
+
+var err=new Error('Uncaught, unspecified "error" event. ('+er+')');
+err.context=er;
+throw err;
+}
+}
+}
+
+handler=this._events[type];
+
+if(isUndefined(handler))
+return false;
+
+if(isFunction(handler)){
+switch(arguments.length){
+
+case 1:
+handler.call(this);
+break;
+case 2:
+handler.call(this,arguments[1]);
+break;
+case 3:
+handler.call(this,arguments[1],arguments[2]);
+break;
+
+default:
+args=Array.prototype.slice.call(arguments,1);
+handler.apply(this,args);}
+
+}else if(isObject(handler)){
+args=Array.prototype.slice.call(arguments,1);
+listeners=handler.slice();
+len=listeners.length;
+for(i=0;i<len;i++){
+listeners[i].apply(this,args);}
+}
+
+return true;
+};
+
+EventEmitter.prototype.addListener=function(type,listener){
+var m;
+
+if(!isFunction(listener))
+throw TypeError('listener must be a function');
+
+if(!this._events)
+this._events={};
+
+
+
+if(this._events.newListener)
+this.emit('newListener',type,
+isFunction(listener.listener)?
+listener.listener:listener);
+
+if(!this._events[type])
+
+this._events[type]=listener;else
+if(isObject(this._events[type]))
+
+this._events[type].push(listener);else
+
+
+this._events[type]=[this._events[type],listener];
+
+
+if(isObject(this._events[type])&&!this._events[type].warned){
+if(!isUndefined(this._maxListeners)){
+m=this._maxListeners;
+}else{
+m=EventEmitter.defaultMaxListeners;
+}
+
+if(m&&m>0&&this._events[type].length>m){
+this._events[type].warned=true;
+console.error('(node) warning: possible EventEmitter memory '+
+'leak detected. %d listeners added. '+
+'Use emitter.setMaxListeners() to increase limit.',
+this._events[type].length);
+if(typeof console.trace==='function'){
+
+console.trace();
+}
+}
+}
+
+return this;
+};
+
+EventEmitter.prototype.on=EventEmitter.prototype.addListener;
+
+EventEmitter.prototype.once=function(type,listener){
+if(!isFunction(listener))
+throw TypeError('listener must be a function');
+
+var fired=false;
+
+function g(){
+this.removeListener(type,g);
+
+if(!fired){
+fired=true;
+listener.apply(this,arguments);
+}
+}
+
+g.listener=listener;
+this.on(type,g);
+
+return this;
+};
+
+
+EventEmitter.prototype.removeListener=function(type,listener){
+var list,position,length,i;
+
+if(!isFunction(listener))
+throw TypeError('listener must be a function');
+
+if(!this._events||!this._events[type])
+return this;
+
+list=this._events[type];
+length=list.length;
+position=-1;
+
+if(list===listener||
+isFunction(list.listener)&&list.listener===listener){
+delete this._events[type];
+if(this._events.removeListener)
+this.emit('removeListener',type,listener);
+
+}else if(isObject(list)){
+for(i=length;i-->0;){
+if(list[i]===listener||
+list[i].listener&&list[i].listener===listener){
+position=i;
+break;
+}
+}
+
+if(position<0)
+return this;
+
+if(list.length===1){
+list.length=0;
+delete this._events[type];
+}else{
+list.splice(position,1);
+}
+
+if(this._events.removeListener)
+this.emit('removeListener',type,listener);
+}
+
+return this;
+};
+
+EventEmitter.prototype.removeAllListeners=function(type){
+var key,listeners;
+
+if(!this._events)
+return this;
+
+
+if(!this._events.removeListener){
+if(arguments.length===0)
+this._events={};else
+if(this._events[type])
+delete this._events[type];
+return this;
+}
+
+
+if(arguments.length===0){
+for(key in this._events){
+if(key==='removeListener')continue;
+this.removeAllListeners(key);
+}
+this.removeAllListeners('removeListener');
+this._events={};
+return this;
+}
+
+listeners=this._events[type];
+
+if(isFunction(listeners)){
+this.removeListener(type,listeners);
+}else if(listeners){
+
+while(listeners.length){
+this.removeListener(type,listeners[listeners.length-1]);}
+}
+delete this._events[type];
+
+return this;
+};
+
+EventEmitter.prototype.listeners=function(type){
+var ret;
+if(!this._events||!this._events[type])
+ret=[];else
+if(isFunction(this._events[type]))
+ret=[this._events[type]];else
+
+ret=this._events[type].slice();
+return ret;
+};
+
+EventEmitter.prototype.listenerCount=function(type){
+if(this._events){
+var evlistener=this._events[type];
+
+if(isFunction(evlistener))
+return 1;else
+if(evlistener)
+return evlistener.length;
+}
+return 0;
+};
+
+EventEmitter.listenerCount=function(emitter,type){
+return emitter.listenerCount(type);
+};
+
+function isFunction(arg){
+return typeof arg==='function';
+}
+
+function isNumber(arg){
+return typeof arg==='number';
+}
+
+function isObject(arg){
+return(typeof arg==='undefined'?'undefined':_typeof(arg))==='object'&&arg!==null;
+}
+
+function isUndefined(arg){
+return arg===void 0;
+}
 
 /***/ }),
 /* 44 */
