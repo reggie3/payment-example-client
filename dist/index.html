@@ -44,7 +44,8 @@
       border-radius: 2px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     }
-    .container{
+
+    .container {
       padding: 10px;
       display: flex;
       flex-direction: column;
@@ -54,76 +55,76 @@
       top: 0px;
       left: 0px;
       right: 0px;
-      bottom:0px;
+      bottom: 0px;
     }
-    #go-back-button{
+
+    #go-back-button {
       display: none;
     }
-    #notice-box{
+
+    #notice-box {
       display: none;
       font-size: 1.5em;
     }
-
     /* ALL LOADERS */
 
-.loader{
-  width: 100px;
-  height: 100px;
-  border-radius: 100%;
-  position: relative;
-  margin: 0 auto;
-  display: none;
-}
+    .loader {
+      width: 100px;
+      height: 100px;
+      border-radius: 100%;
+      position: relative;
+      margin: 0 auto;
+      display: none;
+    }
+    /* LOADER 1 */
 
-/* LOADER 1 */
+    #loader-1:before,
+    #loader-1:after {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      width: 100%;
+      height: 100%;
+      border-radius: 100%;
+      border: 10px solid transparent;
+      border-top-color: limegreen;
+    }
 
-#loader-1:before, #loader-1:after{
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  width: 100%;
-  height: 100%;
-  border-radius: 100%;
-  border: 10px solid transparent;
-  border-top-color: #3498db;
-}
+    #loader-1:before {
+      z-index: 100;
+      animation: spin 1s infinite;
+    }
 
-#loader-1:before{
-  z-index: 100;
-  animation: spin 1s infinite;
-}
+    #loader-1:after {
+      border: 10px solid #ccc;
+    }
 
-#loader-1:after{
-  border: 10px solid #ccc;
-}
+    @keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+      }
 
-@keyframes spin{
-  0%{
-    -webkit-transform: rotate(0deg);
-    -ms-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-
-  100%{
-    -webkit-transform: rotate(360deg);
-    -ms-transform: rotate(360deg);
-    -o-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-
+      100% {
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
 <body>
   <div class='container'>
-  <div id="dropin-container"></div>
-  <div id='loader' class='loader-1'></div>
-  <div id="submit-button" class="button">Submit Purchase</div>
-  <div id='notice-box'>Thank You For Your Purchase</div>
-  <div id='go-back-button' class='button'>Return To Store</div>
+    <div id="dropin-container"></div>
+    <div id='loader-1' class='loader'></div>
+    <div id="submit-button" class="button">Submit Purchase</div>
+    <div id='notice-box'>Thank You For Your Purchase</div>
+    <div id='go-back-button' class='button'>Return To Store</div>
   </div>
 <script type="text/javascript">/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -2264,7 +2265,7 @@ var submitButton=document.querySelector("#submit-button");
 var clientToken="";
 var goBackButton=document.querySelector("#go-back-button");
 var noticeBox=document.querySelector("#notice-box");
-var loader=document.querySelector("#loader");
+var loader=document.querySelector("#loader-1");
 
 _reactNativeWebviewMessaging2.default.on("json",function(json){
 clientToken=json.clientToken;
@@ -2285,7 +2286,6 @@ err:err});
 
 }else{
 
-alert("payload: "+JSON.stringify(payload));
 _reactNativeWebviewMessaging2.default.sendJSON({
 type:"success",
 payload:payload});
@@ -2296,7 +2296,6 @@ payload:payload});
 }).
 catch(function(err){
 
-console.error(err);
 _reactNativeWebviewMessaging2.default.sendJSON({
 type:"error",
 err:err});

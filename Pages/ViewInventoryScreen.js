@@ -14,6 +14,8 @@ class ViewInventoryScreen extends React.Component {
     };
   }
 
+
+
   addItemToCart = item => {
     this.props.dispatch(actions.cartActions.addItemToCart(item, 1));
   };
@@ -55,7 +57,6 @@ class ViewInventoryScreen extends React.Component {
           <FlatList
             data={this.props.inventory}
             refreshing={this.state.refreshing}
-            onRefresh={this.getInventory.bind(this)}
             keyExtractor={(item, index) => item.ID}
             renderItem={({ item }) =>
               <InventoryListItem

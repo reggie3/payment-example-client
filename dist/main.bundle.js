@@ -2137,7 +2137,7 @@ var submitButton=document.querySelector("#submit-button");
 var clientToken="";
 var goBackButton=document.querySelector("#go-back-button");
 var noticeBox=document.querySelector("#notice-box");
-var loader=document.querySelector("#loader");
+var loader=document.querySelector("#loader-1");
 
 _reactNativeWebviewMessaging2.default.on("json",function(json){
 clientToken=json.clientToken;
@@ -2158,7 +2158,6 @@ err:err});
 
 }else{
 
-alert("payload: "+JSON.stringify(payload));
 _reactNativeWebviewMessaging2.default.sendJSON({
 type:"success",
 payload:payload});
@@ -2169,7 +2168,6 @@ payload:payload});
 }).
 catch(function(err){
 
-console.error(err);
 _reactNativeWebviewMessaging2.default.sendJSON({
 type:"error",
 err:err});
