@@ -13,6 +13,7 @@ export const getClientToken = () => {
 };
 
 export const postPurchase = (nonce, amount) => {
+  debugger;
   console.log("in postPurchase");
   return fetch(URL + "/payment?action=purchase-item", {
     method: "POST",

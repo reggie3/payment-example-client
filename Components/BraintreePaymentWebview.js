@@ -2,8 +2,10 @@ import React from "react";
 import { Text, View, Button } from "react-native";
 import { WebView } from "./rnwm-webview";
 import * as brainTreeUtils from "../utils/braintreeUtils";
+import { connect } from "react-redux";
+import actions from "../actions/actions";
 
-export default class App extends React.Component {
+class BraintreePaymentWebview extends React.Component {
   constructor() {
     super();
 
@@ -14,7 +16,8 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1,
+      backgroundColor: `blue` }}>
         <WebView
           onLoad={this.sendClientTokenToWebView}
           source={require("../dist/index.html")}
@@ -38,19 +41,25 @@ export default class App extends React.Component {
 
     messagesChannel.on("json", json => {
       if (json.type === "success") {
-        console.log(`${json.payload}`);
+        // send purchasing event to webview
+        this.webview.emit("purchasing");
+
+        // make api call to purchase the item
         brainTreeUtils
-          .postPurchase(json.payload.nonce, "10.00")
+          .postPurchase(json.payload.nonce, this.props.cart.totalPrice)
           .then(response => {
             console.log({ response });
             if (response.type === "success") {
-              debugger;
+              this.webview.emit("purchaseSuccess");
             }
           });
       } else {
-        alert(`payment error:
-        ${json.err}`);
+         this.webview.emit("purchaseFailure", {payload: json.err});
       }
+    });
+
+    messagesChannel.on('goBack', ()=>{
+      this.props.dispatch(actions.navActions.navigateTo("Home"));
     });
   }
 
@@ -58,3 +67,22 @@ export default class App extends React.Component {
     this.webview.sendJSON({ clientToken: this.props.clientToken });
   };
 }
+
+const mapStateToProps = state => {
+  return Object.assign(
+    {},
+    {
+      cart: state.cart
+    }
+  );
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  BraintreePaymentWebview
+);

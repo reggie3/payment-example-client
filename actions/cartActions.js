@@ -1,8 +1,9 @@
 let cartActions = {
-    addToCart: (item) => {
+    addItemToCart: (item, amount) => {
     return {
-      type: "ADD_TO_ITEM",
-      item
+      type: "ADD_ITEM_TO_CART",
+      item,
+      amount
     };
   }
 }

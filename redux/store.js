@@ -9,7 +9,10 @@ export let defaultState = {
   appState: {},
   inventory: [],
   purchases: {},
-  cart:[],
+  cart:{
+    totalPrice: 0.00,
+    items:[]
+  },
   modals: {
     showErrorDialog: {
       open: false,

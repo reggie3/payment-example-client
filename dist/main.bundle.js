@@ -2133,8 +2133,11 @@ module.exports=uuid;
 var _reactNativeWebviewMessaging=__webpack_require__(42);var _reactNativeWebviewMessaging2=_interopRequireDefault(_reactNativeWebviewMessaging);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
 var dropin=__webpack_require__(44);
 
-var button=document.querySelector("#submit-button");
+var submitButton=document.querySelector("#submit-button");
 var clientToken="";
+var goBackButton=document.querySelector("#go-back-button");
+var noticeBox=document.querySelector("#notice-box");
+var loader=document.querySelector("#loader");
 
 _reactNativeWebviewMessaging2.default.on("json",function(json){
 clientToken=json.clientToken;
@@ -2146,20 +2149,55 @@ container:"#dropin-container"}).
 
 then(function(instance){
 
-button.addEventListener("click",function(){
+submitButton.addEventListener("click",function(){
 instance.requestPaymentMethod(function(err,payload){
+if(err){
+_reactNativeWebviewMessaging2.default.sendJSON({
+type:"error",
+err:err});
+
+}else{
 
 alert("payload: "+JSON.stringify(payload));
 _reactNativeWebviewMessaging2.default.sendJSON({
+type:"success",
 payload:payload});
 
+}
 });
 });
 }).
 catch(function(err){
 
 console.error(err);
+_reactNativeWebviewMessaging2.default.sendJSON({
+type:"error",
+err:err});
+
 });
+});
+
+_reactNativeWebviewMessaging2.default.on("purchasing",function(event){
+submitButton.style.display="none";
+noticeBox.style.display="inline";
+loader.style.display="inline";
+noticeBox.innerHTML="Making Purchase";
+});
+
+_reactNativeWebviewMessaging2.default.on("purchaseSuccess",function(event){
+goBackButton.style.display="inline";
+loader.style.display="none";
+noticeBox.innerHTML="Thank You For Your Purchase";
+});
+
+_reactNativeWebviewMessaging2.default.on("purchaseFailure",function(event){
+goBackButton.style.display="inline";
+loader.style.display="none";
+noticeBox.innerHTML="Purchase Error "+event.payload;
+});
+
+goBackButton.addEventListener("click",function(){
+_reactNativeWebviewMessaging2.default.emit("goBack");
 });
 
 /***/ }),

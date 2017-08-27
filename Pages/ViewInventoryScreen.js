@@ -1,51 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import actions from "../actions/actions";
-import { TouchableHighlight, View, FlatList, Text, Button } from "react-native";
+import { View, FlatList, Text, Button } from "react-native";
+import Cart from '../Components/Cart';
+import InventoryListItem from '../Components/InventoryListItem';
 
-const ListItem = props => {
-  return (
-    <TouchableHighlight
-      onPress={props.onPress}
-      underlayColor="#ddd"
-      style={{
-        backgroundColor: "white",
-        marginVertical: 4,
-        padding: 4
-      }}
-    >
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between"
-        }}
-      >
-        <View>
-          <Text
-            style={{
-              fontSize: 18
-            }}
-          >
-            {props.name}
-          </Text>
-          <Text>
-            {props.description}
-          </Text>
-        </View>
-        <View>
-          <Text
-            style={{
-              fontSize: 18
-            }}
-          >
-            ${props.price}
-          </Text>
-        </View>
-      </View>
-    </TouchableHighlight>
-  );
-};
 
 class ViewInventoryScreen extends React.Component {
   constructor(props) {
@@ -63,8 +22,8 @@ class ViewInventoryScreen extends React.Component {
     this.props.dispatch(actions.inventoryActions.getInventory());
   };
 
-  addToCart = item => {
-    this.props.dispatch(actions.cartActions.addToCart(item));
+  addItemToCart = item => {
+    this.props.dispatch(actions.cartActions.addItemToCart(item, 1));
   };
 
   makePurchase = () => {
@@ -94,29 +53,48 @@ class ViewInventoryScreen extends React.Component {
           style={{
             flex: 1,
             backgroundColor: "#eee",
-            padding: 5
+            padding: 10
           }}
         >
+         <View
+          style={{
+            flex: 1,
+          }}>
           <FlatList
             data={this.props.inventory}
             refreshing={this.state.refreshing}
             onRefresh={this.getInventory.bind(this)}
             keyExtractor={(item, index) => item.ID}
             renderItem={({ item }) =>
-              <ListItem
+              <InventoryListItem
                 name={item.name}
                 price={item.price}
                 description={item.description}
-                onPress={this.addToCart.bind(this, item)}
+                onPress={this.addItemToCart.bind(this, item)}
               />}
           />
-          <View>
-            <Text>Cart</Text>
+          </View>
+          <View
+          style={{
+            flex: 1,
+          }}>
+            <Cart/>
+          </View>
+          <View
+          style={{
+            padding: 5
+          }}>
+          <Text
+          style={{
+            fontSize: 18
+          }}>
+          Total Price: ${this.props.totalPrice.toFixed(2)}
+          </Text>
           </View>
           <Button
             onPress={this.makePurchase}
             title="Purchase"
-            color="#841584"
+            color="limegreen"
             accessibilityLabel="Purchase Items"
           />
         </View>
@@ -129,7 +107,8 @@ const mapStateToProps = state => {
   return Object.assign(
     {},
     {
-      inventory: state.inventory
+      inventory: state.inventory,
+      totalPrice: state.cart.totalPrice
     }
   );
 };

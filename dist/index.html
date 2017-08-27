@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +10,121 @@
     body {
       text-align: center;
     }
+
+    .btn {
+      -webkit-border-radius: 2;
+      -moz-border-radius: 2;
+      border-radius: 2px;
+      font-family: Arial;
+      color: #ffffff;
+      font-size: 20px;
+      background: #3498db;
+      padding: 10px 20px 10px 20px;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: #3cb0fd;
+      background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+      background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+      background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+      background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+      background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+      text-decoration: none;
+    }
+
+    .button {
+      background: limegreen;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 8px 20px;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    }
+    .container{
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-content: space-between;
+      justify-content: space-between;
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom:0px;
+    }
+    #go-back-button{
+      display: none;
+    }
+    #notice-box{
+      display: none;
+      font-size: 1.5em;
+    }
+
+    /* ALL LOADERS */
+
+.loader{
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  position: relative;
+  margin: 0 auto;
+  display: none;
+}
+
+/* LOADER 1 */
+
+#loader-1:before, #loader-1:after{
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  border: 10px solid transparent;
+  border-top-color: #3498db;
+}
+
+#loader-1:before{
+  z-index: 100;
+  animation: spin 1s infinite;
+}
+
+#loader-1:after{
+  border: 10px solid #ccc;
+}
+
+@keyframes spin{
+  0%{
+    -webkit-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  100%{
+    -webkit-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
   </style>
 </head>
+
 <body>
+  <div class='container'>
   <div id="dropin-container"></div>
-  <button id="submit-button">Request payment method</button>
+  <div id='loader' class='loader-1'></div>
+  <div id="submit-button" class="button">Submit Purchase</div>
+  <div id='notice-box'>Thank You For Your Purchase</div>
+  <div id='go-back-button' class='button'>Return To Store</div>
+  </div>
 <script type="text/javascript">/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -2149,8 +2260,11 @@ module.exports=uuid;
 var _reactNativeWebviewMessaging=__webpack_require__(42);var _reactNativeWebviewMessaging2=_interopRequireDefault(_reactNativeWebviewMessaging);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}
 var dropin=__webpack_require__(44);
 
-var button=document.querySelector("#submit-button");
+var submitButton=document.querySelector("#submit-button");
 var clientToken="";
+var goBackButton=document.querySelector("#go-back-button");
+var noticeBox=document.querySelector("#notice-box");
+var loader=document.querySelector("#loader");
 
 _reactNativeWebviewMessaging2.default.on("json",function(json){
 clientToken=json.clientToken;
@@ -2162,20 +2276,55 @@ container:"#dropin-container"}).
 
 then(function(instance){
 
-button.addEventListener("click",function(){
+submitButton.addEventListener("click",function(){
 instance.requestPaymentMethod(function(err,payload){
+if(err){
+_reactNativeWebviewMessaging2.default.sendJSON({
+type:"error",
+err:err});
+
+}else{
 
 alert("payload: "+JSON.stringify(payload));
 _reactNativeWebviewMessaging2.default.sendJSON({
+type:"success",
 payload:payload});
 
+}
 });
 });
 }).
 catch(function(err){
 
 console.error(err);
+_reactNativeWebviewMessaging2.default.sendJSON({
+type:"error",
+err:err});
+
 });
+});
+
+_reactNativeWebviewMessaging2.default.on("purchasing",function(event){
+submitButton.style.display="none";
+noticeBox.style.display="inline";
+loader.style.display="inline";
+noticeBox.innerHTML="Making Purchase";
+});
+
+_reactNativeWebviewMessaging2.default.on("purchaseSuccess",function(event){
+goBackButton.style.display="inline";
+loader.style.display="none";
+noticeBox.innerHTML="Thank You For Your Purchase";
+});
+
+_reactNativeWebviewMessaging2.default.on("purchaseFailure",function(event){
+goBackButton.style.display="inline";
+loader.style.display="none";
+noticeBox.innerHTML="Purchase Error "+event.payload;
+});
+
+goBackButton.addEventListener("click",function(){
+_reactNativeWebviewMessaging2.default.emit("goBack");
 });
 
 /***/ }),
@@ -10554,4 +10703,5 @@ module.exports=kebabCaseToCamelCase;
 
 /***/ })
 /******/ ]);</script></body>
+
 </html>

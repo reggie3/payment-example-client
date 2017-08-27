@@ -6,12 +6,14 @@ import {
   Button,
   ActivityIndicator
 } from "react-native";
+import { connect } from "react-redux";
+import actions from "../actions/actions";
 import * as brainTreeUtils from "../utils/braintreeUtils";
 import renderIf from "render-if";
 import { globalStyles } from "../globals/styles";
 import BraintreePaymentWebview from "../Components/BraintreePaymentWebview";
 
-export default class BraintreePaymentScreen extends React.Component {
+class BraintreePaymentScreen extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -48,6 +50,26 @@ export default class BraintreePaymentScreen extends React.Component {
     );
   }
 }
+
+
+const mapStateToProps = state => {
+  return Object.assign(
+    {},
+    {
+      cart: state.cart
+    }
+  );
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  BraintreePaymentScreen
+);
 
 const styles = StyleSheet.create(
   Object.assign({}, globalStyles, {
