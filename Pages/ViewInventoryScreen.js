@@ -14,14 +14,6 @@ class ViewInventoryScreen extends React.Component {
     };
   }
 
-  componentDidMount = () => {
-    this.getInventory();
-  };
-
-  getInventory = () => {
-    this.props.dispatch(actions.inventoryActions.getInventory());
-  };
-
   addItemToCart = item => {
     this.props.dispatch(actions.cartActions.addItemToCart(item, 1));
   };

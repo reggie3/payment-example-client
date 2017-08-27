@@ -7,7 +7,30 @@ import * as MySagas from "./sagas";
 
 export let defaultState = {
   appState: {},
-  inventory: [],
+  inventory: [{
+        ID: 1,
+        name: "tooth brushes",
+        description: 'dental',
+        price: '1.99'
+    },
+    {
+        ID: 2,
+        name: "dental floss",
+        description: 'dental',
+        price: '3.99'
+    },
+    {
+        ID: 3,
+        name: "baby oil",
+        description: 'childcare',
+        price: '3.50'
+    },
+    {
+        ID: 4,
+        name: "marshmallows",
+        description: 'snacks',
+        price: '1.99'
+    }],
   purchases: {},
   cart:{
     totalPrice: 0.00,
