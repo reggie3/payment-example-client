@@ -60,7 +60,7 @@ export function* sagaShowPendingDialog() {
  * show purchase modal
  * 
  */
-function* showPurchaseModal(action) {
+/* function* showPurchaseModal(action) {
   try {
       debugger;
     yield put({
@@ -76,7 +76,7 @@ export function* sagaShowPurchaseModal() {
   yield* takeEvery(['GET_CLIENT_TOKEN_FULFILLED'
   ], showPurchaseModal);
 }
-
+ */
 /****
  * show error dialog
  * 

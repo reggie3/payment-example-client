@@ -2,7 +2,7 @@
 // to avoid conflicts with Expo version of react
 import React from "./react.min";
 import ReactDOM from "./react-dom.min";
-import { Provider } from "react-redux";
+import { Provider, connect } from "react-redux";
 import { store } from "../redux/store";
 import * as brainTreeUtils from "../utils/braintreeUtils";
 
@@ -14,7 +14,7 @@ class AppComponent extends React.Component {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     brainTreeUtils.getClientToken().then(response => {
       // console.log({ response });
       if (response.type === "success") {
@@ -24,11 +24,18 @@ class AppComponent extends React.Component {
         });
       }
     });
-  };
+  }
 
   render() {
     return (
-        <div>Hello</div>
+      <Provider store={store}>
+        <div>
+          <div>Hello</div>
+          <div>
+            {this.props.cart.totalPrice}
+          </div>
+        </div>
+      </Provider>
     );
   }
 }
@@ -48,6 +55,13 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const App = connect(mapStateToProps, mapDispatchToProps)(AppComponent);
+function connectWithStore(store, WrappedComponent, ...args) {
+  var ConnectedWrappedComponent = connect(...args)(WrappedComponent);
+  return function(props) {
+    return <ConnectedWrappedComponent {...props} store={store} />;
+  };
+}
 
-ReactDOM.render(<AppComponent />, document.getElementById("root"));
+const App = connectWithStore(store, AppComponent, mapStateToProps);
+
+ReactDOM.render(<App />, document.getElementById("root"));

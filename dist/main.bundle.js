@@ -7831,6 +7831,8 @@ module.exports = wrapPromise;
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(116);
@@ -7894,9 +7896,22 @@ var AppComponent = function (_React$Component) {
     key: "render",
     value: function render() {
       return _react2.default.createElement(
-        "div",
-        null,
-        "Hello"
+        _reactRedux.Provider,
+        { store: _store.store },
+        _react2.default.createElement(
+          "div",
+          null,
+          _react2.default.createElement(
+            "div",
+            null,
+            "Hello"
+          ),
+          _react2.default.createElement(
+            "div",
+            null,
+            this.props.cart.totalPrice
+          )
+        )
       );
     }
   }]);
@@ -7916,9 +7931,20 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   };
 };
 
-var App = connect(mapStateToProps, mapDispatchToProps)(AppComponent);
+function connectWithStore(store, WrappedComponent) {
+  for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+    args[_key - 2] = arguments[_key];
+  }
 
-_reactDom2.default.render(_react2.default.createElement(AppComponent, null), document.getElementById("root"));
+  var ConnectedWrappedComponent = _reactRedux.connect.apply(undefined, args)(WrappedComponent);
+  return function (props) {
+    return _react2.default.createElement(ConnectedWrappedComponent, _extends({}, props, { store: store }));
+  };
+}
+
+var App = connectWithStore(_store.store, AppComponent, mapStateToProps);
+
+_reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById("root"));
 
 /***/ }),
 /* 116 */
@@ -15437,10 +15463,10 @@ const store = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["e" /* createStore */])
 
 sagaMiddleware.run(__WEBPACK_IMPORTED_MODULE_5__sagas__["a" /* sagaHandleFormSubmitSuccess */]);
 sagaMiddleware.run(__WEBPACK_IMPORTED_MODULE_5__sagas__["c" /* sagaShowPendingDialog */]);
-//sagaMiddleware.run(MySagas.sagaHidePendingDialog);
+// sagaMiddleware.run(MySagas.sagaHidePendingDialog);
 sagaMiddleware.run(__WEBPACK_IMPORTED_MODULE_5__sagas__["b" /* sagaShowErrorDialog */]);
-sagaMiddleware.run(__WEBPACK_IMPORTED_MODULE_5__sagas__["e" /* sagaShowSuccessDialog */]);
-sagaMiddleware.run(__WEBPACK_IMPORTED_MODULE_5__sagas__["d" /* sagaShowPurchaseModal */]);
+sagaMiddleware.run(__WEBPACK_IMPORTED_MODULE_5__sagas__["d" /* sagaShowSuccessDialog */]);
+// sagaMiddleware.run(MySagas.sagaShowPurchaseModal);
 
 
 
@@ -15477,7 +15503,7 @@ sagaMiddleware.run(__WEBPACK_IMPORTED_MODULE_5__sagas__["d" /* sagaShowPurchaseM
 
 
 
-/* harmony default export */ __webpack_exports__["a"] = (rootReducer = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
+let rootReducer = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
   purchases: __WEBPACK_IMPORTED_MODULE_1__purchases__["a" /* default */],
   inventory: __WEBPACK_IMPORTED_MODULE_2__inventory__["a" /* default */],
   appState: __WEBPACK_IMPORTED_MODULE_3__appState__["a" /* default */],
@@ -15486,8 +15512,9 @@ sagaMiddleware.run(__WEBPACK_IMPORTED_MODULE_5__sagas__["d" /* sagaShowPurchaseM
   nav: __WEBPACK_IMPORTED_MODULE_6__nav__["a" /* default */],
   cart: __WEBPACK_IMPORTED_MODULE_7__cart__["a" /* default */],
   form: __WEBPACK_IMPORTED_MODULE_8_redux_form__["a" /* reducer */]
-}));
+});
 
+/* harmony default export */ __webpack_exports__["a"] = (rootReducer);
 
 /***/ }),
 /* 144 */
@@ -24466,9 +24493,8 @@ function throttle(delayLength, pattern, worker) {
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = sagaHandleFormSubmitSuccess;
 /* harmony export (immutable) */ __webpack_exports__["c"] = sagaShowPendingDialog;
-/* harmony export (immutable) */ __webpack_exports__["d"] = sagaShowPurchaseModal;
 /* harmony export (immutable) */ __webpack_exports__["b"] = sagaShowErrorDialog;
-/* harmony export (immutable) */ __webpack_exports__["e"] = sagaShowSuccessDialog;
+/* harmony export (immutable) */ __webpack_exports__["d"] = sagaShowSuccessDialog;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux_saga_effects__ = __webpack_require__(105);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_lambdaPost__ = __webpack_require__(327);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_lambdaGet__ = __webpack_require__(328);
@@ -24534,10 +24560,10 @@ function* sagaShowPendingDialog() {
  * show purchase modal
  * 
  */
-function* showPurchaseModal(action) {
+/* function* showPurchaseModal(action) {
   try {
       debugger;
-    yield Object(__WEBPACK_IMPORTED_MODULE_0_redux_saga_effects__["a" /* put */])({
+    yield put({
       type: "SHOW_PURCHASE_MODAL",
       item: action.item
     });
@@ -24546,11 +24572,11 @@ function* showPurchaseModal(action) {
   }
 }
 
-function* sagaShowPurchaseModal() {
-  yield* Object(__WEBPACK_IMPORTED_MODULE_0_redux_saga_effects__["c" /* takeEvery */])(['GET_CLIENT_TOKEN_FULFILLED'
+export function* sagaShowPurchaseModal() {
+  yield* takeEvery(['GET_CLIENT_TOKEN_FULFILLED'
   ], showPurchaseModal);
 }
-
+ */
 /****
  * show error dialog
  * 

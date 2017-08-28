@@ -9,7 +9,7 @@ import cart from "./cart";
 
 import { reducer as formReducer } from "redux-form";
 
-export default (rootReducer = combineReducers({
+let rootReducer = combineReducers({
   purchases,
   inventory,
   appState,
@@ -18,4 +18,6 @@ export default (rootReducer = combineReducers({
   nav,
   cart,
   form: formReducer
-}));
+});
+
+export default rootReducer;

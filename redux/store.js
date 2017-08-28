@@ -75,8 +75,8 @@ export const store = createStore(
 
 sagaMiddleware.run(MySagas.sagaHandleFormSubmitSuccess);
 sagaMiddleware.run(MySagas.sagaShowPendingDialog);
-//sagaMiddleware.run(MySagas.sagaHidePendingDialog);
+// sagaMiddleware.run(MySagas.sagaHidePendingDialog);
 sagaMiddleware.run(MySagas.sagaShowErrorDialog);
 sagaMiddleware.run(MySagas.sagaShowSuccessDialog);
-sagaMiddleware.run(MySagas.sagaShowPurchaseModal);
+// sagaMiddleware.run(MySagas.sagaShowPurchaseModal);
 
