@@ -1,67 +1,53 @@
-import RNMessageChannel from "./react-native-webview-messaging";
-const dropin = require("braintree-web-drop-in");
+// download and use react an react-dom from local directory
+// to avoid conflicts with Expo version of react
+import React from "./react.min";
+import ReactDOM from "./react-dom.min";
+import { Provider } from "react-redux";
+import { store } from "../redux/store";
+import * as brainTreeUtils from "../utils/braintreeUtils";
 
-const submitButton = document.querySelector("#submit-button");
-let clientToken = "";
-const goBackButton = document.querySelector("#go-back-button");
-const noticeBox = document.querySelector("#notice-box");
-const loader = document.querySelector("#loader-1");
+class AppComponent extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      clientToken: null
+    };
+  }
 
-RNMessageChannel.on("json", json => {
-  clientToken = json.clientToken;
-
-  dropin
-    .create({
-      authorization: clientToken,
-      container: "#dropin-container"
-    })
-    .then(instance => {
-      //alert(`instance: ${instance}`);
-      submitButton.addEventListener("click", function() {
-        instance.requestPaymentMethod(function(err, payload) {
-          if (err) {
-            RNMessageChannel.sendJSON({
-              type: "error",
-              err
-            });
-          } else {
-            // Submit payload.nonce to your server
-            RNMessageChannel.sendJSON({
-              type: "success",
-              payload
-            });
-          }
+  componentDidMount () {
+    brainTreeUtils.getClientToken().then(response => {
+      // console.log({ response });
+      if (response.type === "success") {
+        let clientToken = response.response.result.clientToken;
+        this.setState({
+          clientToken
         });
-      });
-    })
-    .catch(function(err) {
-      // Handle any errors that might've occurred when creating Drop-in
-      RNMessageChannel.sendJSON({
-        type: "error",
-        err
-      });
+      }
     });
-});
+  };
 
-RNMessageChannel.on("purchasing", event => {
-  submitButton.style.display = "none";
-  noticeBox.style.display = "inline";
-  loader.style.display = "inline";
-  noticeBox.innerHTML = "Making Purchase";
-});
+  render() {
+    return (
+        <div>Hello</div>
+    );
+  }
+}
 
-RNMessageChannel.on("purchaseSuccess", event => {
-  goBackButton.style.display = "inline";
-  loader.style.display = "none";
-  noticeBox.innerHTML = "Thank You For Your Purchase";
-});
+const mapStateToProps = state => {
+  return Object.assign(
+    {},
+    {
+      cart: state.cart
+    }
+  );
+};
 
-RNMessageChannel.on("purchaseFailure", event => {
-  goBackButton.style.display = "inline";
-  loader.style.display = "none";
-  noticeBox.innerHTML = `Purchase Error ${event.payload}`;
-});
+const mapDispatchToProps = dispatch => {
+  return {
+    dispatch
+  };
+};
 
-goBackButton.addEventListener("click", function() {
-  RNMessageChannel.emit("goBack");
-});
+const App = connect(mapStateToProps, mapDispatchToProps)(AppComponent);
+
+ReactDOM.render(<AppComponent />, document.getElementById("root"));
