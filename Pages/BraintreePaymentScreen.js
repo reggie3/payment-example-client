@@ -2,43 +2,72 @@ import React from "react";
 import {
   StyleSheet,
   Text,
+  TouchableHighlight,
+  Modal,
   View,
-  Button,
   ActivityIndicator
+  //WebView
 } from "react-native";
+import { WebView } from "react-native-webview-messaging/WebView";
+import * as brainTreeUtils from "../utils/braintreeUtils";
+
 import { connect } from "react-redux";
 import actions from "../actions/actions";
-import * as brainTreeUtils from "../utils/braintreeUtils";
-import renderIf from "render-if";
 import { globalStyles } from "../globals/styles";
-import BraintreePaymentWebview from "../Components/BraintreePaymentWebview";
+import { Button } from "react-native-elements";
+import paymentHTML from "../web/leanHTML.html.js";
+import paymentJS from "../web/leanHTML.js";
+import renderIf from "render-if";
 
 class BraintreePaymentScreen extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       clientToken: null
     };
   }
+  _onChange = form => {
+    this.setState({ cardInfo: form });
+  };
+  purchaseItem = () => {
+    this.props.dispatch(
+      actions.braintreeActions.purchaseItem(
+        this.state.cardInfo,
+        this.props.item
+      )
+    );
+  };
 
   componentDidMount = () => {
     brainTreeUtils.getClientToken().then(response => {
       // console.log({ response });
       if (response.type === "success") {
         let clientToken = response.response.result.clientToken;
-        this.setState({
-          clientToken
+        this.setState({ clientToken });
+        this.webview.sendJSON({
+          clientToken: clientToken
         });
+        this.webview.send("plain text from RN");
+        this.webview.emit("clientTokenEvent", { payload: clientToken });
       }
     });
   };
 
-  // callback to be fired once the purchase is complete
-  purchaseComplete = result => {};
+  onMessage = event => {
+    debugger;
+    console.log(event.nativeEvent.data);
+  };
 
   render() {
+    console.log(this.state.clientToken);
     return (
-      <View style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(240,240,255,0.5)",
+          padding: 10
+        }}
+      >
         {renderIf(this.state.clientToken === null)(
           <ActivityIndicator
             animating={true}
@@ -47,13 +76,24 @@ class BraintreePaymentScreen extends React.Component {
           />
         )}
         {renderIf(this.state.clientToken !== null)(
-          <BraintreePaymentWebview
-            clientToken={this.clientToken}
-            purchaseCompleteCallpack={this.purchaseComplete}
-            clientTokenOptions={{
-              merchantAccountID: null,
-              customerID: null
+          <WebView
+            ref={webview => {
+              this.webview = webview;
             }}
+            source={{ html: paymentHTML }}
+            style={{ flex: 1 }}
+            onMessage={this.onMessage}
+            javaScriptEnabled={true}
+            injectedJavaScript={`
+
+              document.querySelector('#sendMessage-button').addEventListener('click', function () {
+                  window.postMessage({data: "First"}, '*');
+                  alert("${this.state.clientToken}");
+              });
+            
+              alert("in javascript");
+
+            `}
           />
         )}
       </View>
@@ -62,12 +102,7 @@ class BraintreePaymentScreen extends React.Component {
 }
 
 const mapStateToProps = state => {
-  return Object.assign(
-    {},
-    {
-      cart: state.cart
-    }
-  );
+  return Object.assign({}, {});
 };
 
 const mapDispatchToProps = dispatch => {

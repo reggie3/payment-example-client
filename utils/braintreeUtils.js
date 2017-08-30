@@ -12,18 +12,30 @@ export const getClientToken = () => {
   });
 };
 
-export const postPurchase = (nonce, amount) => {
-  debugger;
-  console.log("in postPurchase");
+export const postPurchase = item => {
   return fetch(URL + "/payment?action=purchase-item", {
     method: "POST",
-    body:  JSON.stringify({
-      nonce,
-      amount
-    })
+    body: {
+      item
+    }
   }).then(res => {
     let json = res.json();
     console.log(json);
     return json;
   });
 };
+
+
+export const getPurchaseNonce =(item)=>{
+    braintree.dropin.create({
+      authorization: 'CLIENT_TOKEN_FROM_SERVER',
+
+    }, function (createErr, instance) {
+        debugger;
+      button.addEventListener('click', function () {
+        instance.requestPaymentMethod(function (err, payload) {
+          // Submit payload.nonce to your server
+        });
+      });
+    });
+}

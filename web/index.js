@@ -5,7 +5,7 @@ const submitButton = document.querySelector("#submit-button");
 let clientToken = "";
 const goBackButton = document.querySelector("#go-back-button");
 const noticeBox = document.querySelector("#notice-box");
-const loader = document.querySelector("#loader-1");
+const loader = document.querySelector("#loader");
 
 RNMessageChannel.on("json", json => {
   clientToken = json.clientToken;
