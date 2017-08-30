@@ -26,7 +26,8 @@ module.exports = {
                   }
                 }
               ],
-              "react"
+              "react",
+              "stage-2"
             ],
             babelrc: false
           }

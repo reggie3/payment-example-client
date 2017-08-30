@@ -8,15 +8,45 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import actions from "../actions/actions";
-import renderIf from "render-if";
 import { globalStyles } from "../globals/styles";
 import BraintreePaymentWebview from "../Components/BraintreePaymentWebview";
+import renderIf from "render-if";
 
 class BraintreePaymentScreen extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      clientToken: null,
+      merchantAccountID: null,
+      customerID: null
+    };
+  }
+
+  formLoadPendingCallback = () => {
+    console.log("formLoadPendingCallback");
+  };
+  formLoadCompleteCallback = (err, success) => {
+    console.log({ purchaseResult });
+  };
+  purchasePendingCallback = (err, success) => {
+    console.log("purchasePendingCallback");
+  };
+
+  purchaseCompleteCallback = (err, success) => {
+    console.log({ purchaseResult });
+  };
+
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <BraintreePaymentWebview />
+        <BraintreePaymentWebview
+          customerID={this.state.customerID}
+          merchantAccountID={this.state.merchantAccountID}
+          formLoadPendingCallback={this.formLoadPendingCallback}
+          formLoadCompleteCallback={this.formLoadCompleteCallback}
+          purchasePendingCallback={this.purchasePendingCallback}
+          purchaseCompleteCallback={this.purchaseCompleteCallback}
+        />
       </View>
     );
   }

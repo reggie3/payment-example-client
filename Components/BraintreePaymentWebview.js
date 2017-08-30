@@ -1,6 +1,5 @@
 import React from "react";
-import { Text, View, Button } from "react-native";
-import { WebView } from "./rnwm-webview";
+import { Text, View, Button, WebView } from "react-native";
 import * as brainTreeUtils from "../utils/braintreeUtils";
 import { connect } from "react-redux";
 import actions from "../actions/actions";
@@ -14,20 +13,6 @@ class BraintreePaymentWebview extends React.Component {
     };
   }
 
-  render() {
-    return (
-      <View style={{ flex: 1,
-      backgroundColor: `blue` }}>
-        <WebView
-          onLoad={this.sendClientTokenToWebView}
-          source={require("../dist/index.html")}
-          style={{ flex: 1 }}
-          ref={this._refWebView}
-        />
-      </View>
-    );
-  }
-
   _refWebView = webview => {
     this.webview = webview;
   };
@@ -36,36 +21,59 @@ class BraintreePaymentWebview extends React.Component {
     const { data } = event.nativeEvent;
     console.log({ data });
   };
+
   componentDidMount() {
-    const { messagesChannel } = this.webview;
-
-    messagesChannel.on("json", json => {
-      if (json.type === "success") {
-        // send purchasing event to webview
-        this.webview.emit("purchasing");
-
-        // make api call to purchase the item
-        brainTreeUtils
-          .postPurchase(json.payload.nonce, this.props.cart.totalPrice)
-          .then(response => {
-            console.log({ response });
-            if (response.type === "success") {
-              this.webview.emit("purchaseSuccess");
-            }
-          });
-      } else {
-         this.webview.emit("purchaseFailure", {payload: json.err});
+    // tell the webview to initalize itself
+    console.log("posting message");
+    this.webview.postMessage({
+      msg: "init",
+      payload: {
+        customerID: this.props.hasOwnProperty("customerID")
+          ? this.props.customerID
+          : null,
+        merchantAccountID: this.props.hasOwnProperty("merchantAccountID")
+          ? this.props.merchantAccountID
+          : null
       }
-    });
-
-    messagesChannel.on('goBack', ()=>{
-      this.props.dispatch(actions.navActions.navigateTo("Home"));
     });
   }
 
   sendClientTokenToWebView = () => {
-    this.webview.sendJSON({ clientToken: this.props.clientToken });
+    this.webview.postMessage({
+      msg: "clientToken",
+      payload: { clientToken: this.props.clientToken }
+    });
   };
+
+  onMessage(event) {
+    debugger;
+    console.log("On Message", event.nativeEvent.data);
+  }
+
+  _refWebView = webview => {
+    console.log("setting reference");
+    this.webview = webview;
+    debugger;
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: `blue`
+        }}
+      >
+        <WebView
+          onLoad={this.sendClientTokenToWebView}
+          source={require("../dist/index.html")}
+          style={{ flex: 1 }}
+          ref={webview => (this.webview = webview)}
+          onMessage={this.onMessage}
+        />
+      </View>
+    );
+  }
 }
 
 const mapStateToProps = state => {
