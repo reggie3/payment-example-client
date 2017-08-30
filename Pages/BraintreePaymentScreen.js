@@ -44,7 +44,8 @@ class BraintreePaymentScreen extends React.Component {
           />
         )}
         {renderIf(this.state.clientToken !== null)(
-          <BraintreePaymentWebview clientToken={this.state.clientToken} />
+          <BraintreePaymentWebview 
+          clientToken={this.state.clientToken} />
         )}
       </View>
     );
