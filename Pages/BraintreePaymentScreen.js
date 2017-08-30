@@ -33,6 +33,9 @@ class BraintreePaymentScreen extends React.Component {
     });
   };
 
+  // callback to be fired once the purchase is complete
+  purchaseComplete = result => {};
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -44,13 +47,19 @@ class BraintreePaymentScreen extends React.Component {
           />
         )}
         {renderIf(this.state.clientToken !== null)(
-          <BraintreePaymentWebview clientToken={this.state.clientToken} />
+          <BraintreePaymentWebview
+            clientToken={this.clientToken}
+            purchaseCompleteCallpack={this.purchaseComplete}
+            clientTokenOptions={{
+              merchantAccountID: null,
+              customerID: null
+            }}
+          />
         )}
       </View>
     );
   }
 }
-
 
 const mapStateToProps = state => {
   return Object.assign(

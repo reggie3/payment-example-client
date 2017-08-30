@@ -36,6 +36,8 @@ class BraintreePaymentWebview extends React.Component {
     const { data } = event.nativeEvent;
     console.log({ data });
   };
+
+  
   componentDidMount() {
     const { messagesChannel } = this.webview;
 
