@@ -2158,7 +2158,6 @@ err:err});
 
 }else{
 
-alert("payload: "+JSON.stringify(payload));
 _reactNativeWebviewMessaging2.default.sendJSON({
 type:"success",
 payload:payload});
@@ -2169,7 +2168,6 @@ payload:payload});
 }).
 catch(function(err){
 
-console.error(err);
 _reactNativeWebviewMessaging2.default.sendJSON({
 type:"error",
 err:err});

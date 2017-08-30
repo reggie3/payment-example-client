@@ -55,7 +55,6 @@ class ViewInventoryScreen extends React.Component {
           <FlatList
             data={this.props.inventory}
             refreshing={this.state.refreshing}
-            onRefresh={this.getInventory.bind(this)}
             keyExtractor={(item, index) => item.ID}
             renderItem={({ item }) =>
               <InventoryListItem
