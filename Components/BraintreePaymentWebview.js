@@ -4,6 +4,7 @@ import { WebView } from "./rnwm-webview";
 import * as brainTreeUtils from "../utils/braintreeUtils";
 import { connect } from "react-redux";
 import actions from "../actions/actions";
+import PropTypes from "prop-types";
 
 export default class BraintreePaymentWebview extends React.Component {
   constructor() {
@@ -14,15 +15,20 @@ export default class BraintreePaymentWebview extends React.Component {
     };
   }
   componentDidMount() {
-    const { messagesChannel } = this.webview;
-
     // register listeners to listen for events from the html
     // we'll receive a nonce once the requestPaymentMethodComplete is completed
+    this.registerMessageListeners();
+  }
+
+  registerMessageListeners = () => {
+    const { messagesChannel } = this.webview;
+
     messagesChannel.on("nonceObtained", event => {
       if (event.payload.type === "success") {
         // call the parent's callback to make parent call Braintree API
         this.webview.emit("purchasing");
-        this.props.nonceObtainedCallback(event.payload.nonce);
+        debugger;
+        this.props.nonceObtainedCallback(event.payload.response.nonce);
       } else {
         this.webview.emit("purchaseFailure");
       }
@@ -31,14 +37,15 @@ export default class BraintreePaymentWebview extends React.Component {
     messagesChannel.on("goBack", () => {
       this.props.navigationBackCallback();
     });
-  }
+  };
 
   // send the client token to HTML file to begin the braintree flow
   // called when the HTML in the webview is loaded
   sendClientTokenToHTML = () => {
     this.webview.emit("tokenReceived", {
       payload: {
-        clientToken: this.props.clientToken
+        clientToken: this.props.clientToken,
+        options: this.props.options
       }
     });
   };
@@ -81,3 +88,15 @@ export default class BraintreePaymentWebview extends React.Component {
     );
   }
 }
+
+BraintreePaymentWebview.propTypes = {
+  options: PropTypes.object,
+  clientToken: PropTypes.string.isRequired,
+  paymentAPIResponse: PropTypes.string.isRequired,
+  nonceObtainedCallback: PropTypes.func.isRequired,
+  navigationBackCallback: PropTypes.func
+};
+
+BraintreePaymentWebview.defaultProps = {
+  options: {}
+};

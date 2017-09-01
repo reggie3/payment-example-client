@@ -2142,6 +2142,19 @@ var loader=document.querySelector("#loader");
 _reactNativeWebviewMessaging2.default.on("tokenReceived",function(event){
 clientToken=event.payload.clientToken;
 
+if(event.payload.options.creditCard){
+createCreditCardUI(clientToken);
+}
+if(event.payload.options.paypal){
+createPaypalUI(clientToken);
+}
+});
+
+var createPaypalUI=function createPaypalUI(clientToken){
+console.log("Not implmented");
+};
+
+var createCreditCardUI=function createCreditCardUI(clientToken){
 dropin.
 create({
 authorization:clientToken,
@@ -2150,7 +2163,7 @@ container:"#dropin-container"}).
 then(function(instance){
 
 submitButton.addEventListener("click",function(){
-instance.requestPaymentMethod(function(err,payload){
+instance.requestPaymentMethod(function(err,response){
 if(err){
 _reactNativeWebviewMessaging2.default.emit("nonceObtained",{
 payload:{
@@ -2163,7 +2176,7 @@ err:err}});
 _reactNativeWebviewMessaging2.default.emit("nonceObtained",{
 payload:{
 type:"success",
-payload:payload}});
+response:response}});
 
 
 }
@@ -2177,7 +2190,7 @@ type:"error",
 err:err});
 
 });
-});
+};
 
 _reactNativeWebviewMessaging2.default.on("purchasing",function(event){
 submitButton.style.display="none";

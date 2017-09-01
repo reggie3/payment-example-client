@@ -17,21 +17,26 @@ class BraintreePaymentScreen extends React.Component {
   constructor() {
     super();
     this.state = {
-      clientToken: null,
-      paymentAPIResponse: null
+      clientToken: "",
+      paymentAPIResponse: ""
     };
   }
 
   componentDidMount = () => {
-    brainTreeUtils.getClientToken().then(response => {
-      // console.log({ response });
-      if (response.type === "success") {
-        let clientToken = response.response.result.clientToken;
-        this.setState({
-          clientToken
-        });
-      }
-    });
+    brainTreeUtils
+      .getClientToken({
+        merchantAccountID: null,
+        customerID: '12345678'
+      })
+      .then(response => {
+        // console.log({ response });
+        if (response.type === "success") {
+          let clientToken = response.response.result.clientToken;
+          this.setState({
+            clientToken
+          });
+        }
+      });
   };
 
   /******
@@ -41,8 +46,9 @@ class BraintreePaymentScreen extends React.Component {
   nonceObtainedCallback = nonce => {
     // make api call to purchase the item using the nonce received
     // from BraintreeWebView Component
+    
     brainTreeUtils
-      .postPurchase(nonce, this.props.cart.totalPrice)
+      .postPurchase(nonce, this.props.cart.totalPrice, {})
       .then(response => {
         console.log({ response });
         if (response.type === "success") {
@@ -67,19 +73,22 @@ class BraintreePaymentScreen extends React.Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        {renderIf(this.state.clientToken === null)(
+        {renderIf(this.state.clientToken === "")(
           <ActivityIndicator
             animating={true}
             style={[styles.centering, { height: 180 }]}
             size="large"
           />
         )}
-        {renderIf(this.state.clientToken !== null)(
+        {renderIf(this.state.clientToken !== "")(
           <BraintreePaymentWebview
             clientToken={this.state.clientToken}
             nonceObtainedCallback={this.nonceObtainedCallback}
             paymentAPIResponse={this.state.paymentAPIResponse}
             navigationBackCallback={this.navigationBackCallback}
+            options={{
+              creditCard: true
+            }}
           />
         )}
       </View>

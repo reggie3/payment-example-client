@@ -1,10 +1,16 @@
+import Secrets from '../secrets';
 var client = require("braintree-web/client");
-const URL = `https://o2ouqqruk2.execute-api.us-east-1.amazonaws.com/prod`;
+const URL = Secrets.API_URL;
 
-export const getClientToken = () => {
+// call API in order to retrieve client token from Braintree server
+// this version calls a Lambda function
+export const getClientToken = (options={}) => {
 
   return fetch(URL + "/payment?action=get-client-token", {
-    method: "POST"
+    method: "POST",
+    body:  JSON.stringify({
+      options
+    })
   }).then(res => {
     let json = res.json();
     console.log(json);
@@ -12,7 +18,7 @@ export const getClientToken = () => {
   });
 };
 
-export const postPurchase = (nonce, amount) => {
+export const postPurchase = (nonce, amount, options={}) => {
   console.log("in postPurchase");
   return fetch(URL + "/payment?action=purchase-item", {
     method: "POST",

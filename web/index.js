@@ -10,6 +10,19 @@ const loader = document.querySelector("#loader");
 RNMessageChannel.on("tokenReceived", event => {
   clientToken = event.payload.clientToken;
 
+  if (event.payload.options.creditCard) {
+    createCreditCardUI(clientToken);
+  }
+  if (event.payload.options.paypal) {
+    createPaypalUI(clientToken);
+  }
+});
+
+const createPaypalUI = clientToken => {
+  console.log("Not implmented");
+};
+
+const createCreditCardUI = clientToken => {
   dropin
     .create({
       authorization: clientToken,
@@ -18,7 +31,7 @@ RNMessageChannel.on("tokenReceived", event => {
     .then(instance => {
       //alert(`instance: ${instance}`);
       submitButton.addEventListener("click", function() {
-        instance.requestPaymentMethod(function(err, payload) {
+        instance.requestPaymentMethod(function(err, response) {
           if (err) {
             RNMessageChannel.emit("nonceObtained", {
               payload: {
@@ -31,7 +44,7 @@ RNMessageChannel.on("tokenReceived", event => {
             RNMessageChannel.emit("nonceObtained", {
               payload: {
                 type: "success",
-                payload
+                response
               }
             });
           }
@@ -45,7 +58,7 @@ RNMessageChannel.on("tokenReceived", event => {
         err
       });
     });
-});
+};
 
 RNMessageChannel.on("purchasing", event => {
   submitButton.style.display = "none";
