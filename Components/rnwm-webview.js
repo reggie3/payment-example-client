@@ -42,7 +42,7 @@ export class WebView extends Component {
           break;
       }
     } catch (error) {
-        console.log('unreconginzed event data');
+      return;
     }
   };
 

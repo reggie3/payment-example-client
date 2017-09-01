@@ -62,7 +62,6 @@ export function* sagaShowPendingDialog() {
  */
 function* showPurchaseModal(action) {
   try {
-      debugger;
     yield put({
       type: "SHOW_PURCHASE_MODAL",
       item: action.item

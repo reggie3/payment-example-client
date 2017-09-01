@@ -7,8 +7,8 @@ const goBackButton = document.querySelector("#go-back-button");
 const noticeBox = document.querySelector("#notice-box");
 const loader = document.querySelector("#loader");
 
-RNMessageChannel.on("json", json => {
-  clientToken = json.clientToken;
+RNMessageChannel.on("tokenReceived", event => {
+  clientToken = event.payload.clientToken;
 
   dropin
     .create({
@@ -20,15 +20,19 @@ RNMessageChannel.on("json", json => {
       submitButton.addEventListener("click", function() {
         instance.requestPaymentMethod(function(err, payload) {
           if (err) {
-            RNMessageChannel.sendJSON({
-              type: "error",
-              err
+            RNMessageChannel.emit("nonceObtained", {
+              payload: {
+                type: "error",
+                err
+              }
             });
           } else {
             // Submit payload.nonce to your server
-            RNMessageChannel.sendJSON({
-              type: "success",
-              payload
+            RNMessageChannel.emit("nonceObtained", {
+              payload: {
+                type: "success",
+                payload
+              }
             });
           }
         });

@@ -5,84 +5,79 @@ import * as brainTreeUtils from "../utils/braintreeUtils";
 import { connect } from "react-redux";
 import actions from "../actions/actions";
 
-class BraintreePaymentWebview extends React.Component {
+export default class BraintreePaymentWebview extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      message: null
+      paymentAPIResponse: null
     };
   }
+  componentDidMount() {
+    const { messagesChannel } = this.webview;
+
+    // register listeners to listen for events from the html
+    // we'll receive a nonce once the requestPaymentMethodComplete is completed
+    messagesChannel.on("nonceObtained", event => {
+      if (event.payload.type === "success") {
+        // call the parent's callback to make parent call Braintree API
+        this.webview.emit("purchasing");
+        this.props.nonceObtainedCallback(event.payload.nonce);
+      } else {
+        this.webview.emit("purchaseFailure");
+      }
+    });
+
+    messagesChannel.on("goBack", () => {
+      this.props.navigationBackCallback();
+    });
+  }
+
+  // send the client token to HTML file to begin the braintree flow
+  // called when the HTML in the webview is loaded
+  sendClientTokenToHTML = () => {
+    this.webview.emit("tokenReceived", {
+      payload: {
+        clientToken: this.props.clientToken
+      }
+    });
+  };
+
+  // handle purchase responses that parent component sends after making purchase API call
+  handlePurchaseResponse = response => {
+    console.log("handlePurchaseResponse");
+    if (response === "purchaseSuccess") {
+      console.log("emitting purchaseSuccess");
+      this.webview.emit("purchaseSuccess");
+    } else {
+      this.webview.emit("error");
+    }
+  };
+
+  componentWillReceiveProps = nextProps => {
+    console.log({ nextProps });
+    if (nextProps.paymentAPIResponse !== this.state.paymentAPIResponse) {
+      console.log(nextProps.paymentAPIResponse);
+      this.setState({ paymentAPIResponse: nextProps.paymentAPIResponse });
+      this.handlePurchaseResponse(nextProps.paymentAPIResponse);
+    }
+  };
 
   render() {
     return (
-      <View style={{ flex: 1,
-      backgroundColor: `blue` }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: `blue`
+        }}
+      >
         <WebView
-          onLoad={this.sendClientTokenToWebView}
+          onLoad={this.sendClientTokenToHTML}
           source={require("../dist/index.html")}
           style={{ flex: 1 }}
-          ref={this._refWebView}
+          ref={component => (this.webview = component)}
         />
       </View>
     );
   }
-
-  _refWebView = webview => {
-    this.webview = webview;
-  };
-
-  onMessage = event => {
-    const { data } = event.nativeEvent;
-    console.log({ data });
-  };
-  componentDidMount() {
-    const { messagesChannel } = this.webview;
-
-    messagesChannel.on("json", json => {
-      if (json.type === "success") {
-        // send purchasing event to webview
-        this.webview.emit("purchasing");
-
-        // make api call to purchase the item
-        brainTreeUtils
-          .postPurchase(json.payload.nonce, this.props.cart.totalPrice)
-          .then(response => {
-            console.log({ response });
-            if (response.type === "success") {
-              this.webview.emit("purchaseSuccess");
-            }
-          });
-      } else {
-         this.webview.emit("purchaseFailure", {payload: json.err});
-      }
-    });
-
-    messagesChannel.on('goBack', ()=>{
-      this.props.dispatch(actions.navActions.navigateTo("Home"));
-    });
-  }
-
-  sendClientTokenToWebView = () => {
-    this.webview.sendJSON({ clientToken: this.props.clientToken });
-  };
 }
-
-const mapStateToProps = state => {
-  return Object.assign(
-    {},
-    {
-      cart: state.cart
-    }
-  );
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    dispatch
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(
-  BraintreePaymentWebview
-);

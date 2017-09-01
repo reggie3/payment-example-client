@@ -19,14 +19,21 @@ export default function locations(cart = {}, action) {
       }
 
       let newTotalPrice = 0;
-      newItems.forEach((itemInfo)=>{
-        newTotalPrice += (itemInfo.amount * itemInfo.item.price)
+      newItems.forEach(itemInfo => {
+        newTotalPrice += itemInfo.amount * itemInfo.item.price;
       });
 
       return Object.assign({}, cart, {
         items: newItems,
         totalPrice: newTotalPrice
       });
+
+    case "EMPTY_CART":
+      return {
+        totalPrice: 0.0,
+        items: []
+      };
+      
     default:
       return cart;
   }

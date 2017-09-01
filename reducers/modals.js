@@ -69,7 +69,6 @@ export default function modals(modals = {}, action) {
         })
       });
     case "SHOW_PAYMENT_MODAL":
-      debugger;
       return Object.assign({}, modals, {
         showPaymentModal: Object.assign({}, modals.showPaymentModal, {
           open: true,

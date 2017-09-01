@@ -2,129 +2,157 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-  <style>
-    body {
-      text-align: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            text-align: center;
+        }
 
-    .btn {
-      -webkit-border-radius: 2;
-      -moz-border-radius: 2;
-      border-radius: 2px;
-      font-family: Arial;
-      color: #ffffff;
-      font-size: 20px;
-      background: #3498db;
-      padding: 10px 20px 10px 20px;
-      text-decoration: none;
-    }
+        .btn {
+            -webkit-border-radius: 2;
+            -moz-border-radius: 2;
+            border-radius: 2px;
+            font-family: Arial;
+            color: #ffffff;
+            font-size: 20px;
+            background: #3498db;
+            padding: 10px 20px 10px 20px;
+            text-decoration: none;
+        }
 
-    .btn:hover {
-      background: #3cb0fd;
-      background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
-      background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
-      background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
-      background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
-      background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
-      text-decoration: none;
-    }
+        .btn:hover {
+            background: #3cb0fd;
+            background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+            background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+            text-decoration: none;
+        }
 
-    .button {
-      background: limegreen;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      padding: 8px 20px;
-      border-radius: 2px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    }
-    .container{
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-content: space-between;
-      justify-content: space-between;
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      right: 0px;
-      bottom:0px;
-    }
-    #go-back-button{
-      display: none;
-    }
-    #notice-box{
-      display: none;
-      font-size: 1.5em;
-    }
+        .button {
+            background: limegreen;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 8px 20px;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        }
 
-    /* ALL LOADERS */
+        .container {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-content: space-between;
+            justify-content: space-between;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+        }
 
-.loader{
-  width: 100px;
-  height: 100px;
-  border-radius: 100%;
-  position: relative;
-  margin: 0 auto;
-  display: none;
-}
+        #go-back-button {
+            display: none;
+        }
 
-/* LOADER 1 */
+        #notice-box {
+            display: none;
+            font-size: 1.5em;
+        }
+        /* ALL LOADERS */
 
-#loader-1:before, #loader-1:after{
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  width: 100%;
-  height: 100%;
-  border-radius: 100%;
-  border: 10px solid transparent;
-  border-top-color: #3498db;
-}
+        .loader,
+        .loader:before,
+        .loader:after {
+            border-radius: 50%;
+        }
 
-#loader-1:before{
-  z-index: 100;
-  animation: spin 1s infinite;
-}
+        .loader {
+            display: none;
+            color: #00ffff;
+            font-size: 11px;
+            text-indent: -99999em;
+            margin: 55px auto;
+            position: relative;
+            width: 10em;
+            height: 10em;
+            box-shadow: inset 0 0 0 1em;
+            -webkit-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            transform: translateZ(0);
+        }
 
-#loader-1:after{
-  border: 10px solid #ccc;
-}
+        .loader:before,
+        .loader:after {
+            position: absolute;
+            content: '';
+        }
 
-@keyframes spin{
-  0%{
-    -webkit-transform: rotate(0deg);
-    -ms-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
+        .loader:before {
+            width: 5.2em;
+            height: 10.2em;
+            background: #00ffff;
+            border-radius: 10.2em 0 0 10.2em;
+            top: -0.1em;
+            left: -0.1em;
+            -webkit-transform-origin: 5.2em 5.1em;
+            transform-origin: 5.2em 5.1em;
+            -webkit-animation: load2 2s infinite ease 1.5s;
+            animation: load2 2s infinite ease 1.5s;
+        }
 
-  100%{
-    -webkit-transform: rotate(360deg);
-    -ms-transform: rotate(360deg);
-    -o-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
+        .loader:after {
+            width: 5.2em;
+            height: 10.2em;
+            background: #00ffff;
+            border-radius: 0 10.2em 10.2em 0;
+            top: -0.1em;
+            left: 5.1em;
+            -webkit-transform-origin: 0px 5.1em;
+            transform-origin: 0px 5.1em;
+            -webkit-animation: load2 2s infinite ease;
+            animation: load2 2s infinite ease;
+        }
 
-  </style>
+        @-webkit-keyframes load2 {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes load2 {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <div class='container'>
-  <div id="dropin-container"></div>
-  <div id='loader' class='loader-1'></div>
-  <div id="submit-button" class="button">Submit Purchase</div>
-  <div id='notice-box'>Thank You For Your Purchase</div>
-  <div id='go-back-button' class='button'>Return To Store</div>
-  </div>
+    <div class='container'>
+        <div id="dropin-container"></div>
+        <div id='loader' class='loader'></div>
+        <div id="submit-button" class="button">Submit Purchase</div>
+        <div id='notice-box'>Thank You For Your Purchase</div>
+        <div id='go-back-button' class='button'>Return To Store</div>
+    </div>
 </body>
 
 </html>

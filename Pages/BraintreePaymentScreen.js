@@ -17,7 +17,8 @@ class BraintreePaymentScreen extends React.Component {
   constructor() {
     super();
     this.state = {
-      clientToken: null
+      clientToken: null,
+      paymentAPIResponse: null
     };
   }
 
@@ -33,6 +34,36 @@ class BraintreePaymentScreen extends React.Component {
     });
   };
 
+  /******
+   * called by BraintreePaymentWebview once a nonce is recieved by
+   * the webview and posts the purchase to the applicationServer
+   */
+  nonceObtainedCallback = nonce => {
+    // make api call to purchase the item using the nonce received
+    // from BraintreeWebView Component
+    brainTreeUtils
+      .postPurchase(nonce, this.props.cart.totalPrice)
+      .then(response => {
+        console.log({ response });
+        if (response.type === "success") {
+          this.setState({ paymentAPIResponse: "purchaseSuccess" });
+          this.props.dispatch(actions.cartActions.emptyCart());
+        } else {
+          this.setState({ paymentAPIResponse: "purchaseFailure" });
+        }
+      });
+  };
+
+  purchaseCompleteCallback = response => {
+    console.log("purchaseCompleteCallback");
+  };
+
+  // enables payment webview to display a button that navigates back
+  // to home page even though it doesn't have access to router
+  navigationBackCallback = () => {
+    this.props.dispatch(actions.navActions.navigateTo("Home"));
+  };
+
   render() {
     return (
       <View style={{ flex: 1 }}>
@@ -44,14 +75,17 @@ class BraintreePaymentScreen extends React.Component {
           />
         )}
         {renderIf(this.state.clientToken !== null)(
-          <BraintreePaymentWebview 
-          clientToken={this.state.clientToken} />
+          <BraintreePaymentWebview
+            clientToken={this.state.clientToken}
+            nonceObtainedCallback={this.nonceObtainedCallback}
+            paymentAPIResponse={this.state.paymentAPIResponse}
+            navigationBackCallback={this.navigationBackCallback}
+          />
         )}
       </View>
     );
   }
 }
-
 
 const mapStateToProps = state => {
   return Object.assign(

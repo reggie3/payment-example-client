@@ -2139,8 +2139,8 @@ var goBackButton=document.querySelector("#go-back-button");
 var noticeBox=document.querySelector("#notice-box");
 var loader=document.querySelector("#loader");
 
-_reactNativeWebviewMessaging2.default.on("json",function(json){
-clientToken=json.clientToken;
+_reactNativeWebviewMessaging2.default.on("tokenReceived",function(event){
+clientToken=event.payload.clientToken;
 
 dropin.
 create({
@@ -2152,15 +2152,19 @@ then(function(instance){
 submitButton.addEventListener("click",function(){
 instance.requestPaymentMethod(function(err,payload){
 if(err){
-_reactNativeWebviewMessaging2.default.sendJSON({
+_reactNativeWebviewMessaging2.default.emit("nonceObtained",{
+payload:{
 type:"error",
-err:err});
+err:err}});
+
 
 }else{
 
-_reactNativeWebviewMessaging2.default.sendJSON({
+_reactNativeWebviewMessaging2.default.emit("nonceObtained",{
+payload:{
 type:"success",
-payload:payload});
+payload:payload}});
+
 
 }
 });
