@@ -8,45 +8,89 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import actions from "../actions/actions";
-import { globalStyles } from "../globals/styles";
-import BraintreePaymentWebview from "../Components/BraintreePaymentWebview";
+import * as brainTreeUtils from "../utils/braintreeUtils";
 import renderIf from "render-if";
+import { globalStyles } from "../globals/styles";
+import BraintreePaymentWebview from "../web/BraintreePaymentWebview";
 
 class BraintreePaymentScreen extends React.Component {
   constructor() {
     super();
     this.state = {
-      clientToken: null,
-      merchantAccountID: null,
-      customerID: null
+      clientToken: "",
+      paymentAPIResponse: ""
     };
   }
 
-  formLoadPendingCallback = () => {
-    console.log("formLoadPendingCallback");
-  };
-  formLoadCompleteCallback = (err, success) => {
-    console.log({ purchaseResult });
-  };
-  purchasePendingCallback = (err, success) => {
-    console.log("purchasePendingCallback");
+  componentDidMount = () => {
+    brainTreeUtils
+      .getClientToken({
+        merchantAccountID: null,
+        customerID: '12345678'
+      })
+      .then(response => {
+        // console.log({ response });
+        if (response.type === "success") {
+          let clientToken = response.response.result.clientToken;
+          this.setState({
+            clientToken
+          });
+        }
+      });
   };
 
-  purchaseCompleteCallback = (err, success) => {
-    console.log({ purchaseResult });
+  /******
+   * called by BraintreePaymentWebview once a nonce is recieved by
+   * the webview and posts the purchase to the applicationServer
+   */
+  nonceObtainedCallback = nonce => {
+    // make api call to purchase the item using the nonce received
+    // from BraintreeWebView Component
+    
+    brainTreeUtils
+      .postPurchase(nonce, this.props.cart.totalPrice, {})
+      .then(response => {
+        console.log({ response });
+        if (response.type === "success") {
+          this.setState({ paymentAPIResponse: "purchaseSuccess" });
+          this.props.dispatch(actions.cartActions.emptyCart());
+        } else {
+          this.setState({ paymentAPIResponse: "purchaseFailure" });
+        }
+      });
+  };
+
+  purchaseCompleteCallback = response => {
+    console.log("purchaseCompleteCallback");
+  };
+
+  // enables payment webview to display a button that navigates back
+  // to home page even though it doesn't have access to router
+  navigationBackCallback = () => {
+    this.props.dispatch(actions.navActions.navigateTo("Home"));
   };
 
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <BraintreePaymentWebview
-          customerID={this.state.customerID}
-          merchantAccountID={this.state.merchantAccountID}
-          formLoadPendingCallback={this.formLoadPendingCallback}
-          formLoadCompleteCallback={this.formLoadCompleteCallback}
-          purchasePendingCallback={this.purchasePendingCallback}
-          purchaseCompleteCallback={this.purchaseCompleteCallback}
-        />
+        {renderIf(this.state.clientToken === "")(
+          <ActivityIndicator
+            animating={true}
+            style={[styles.centering, { height: 180 }]}
+            size="large"
+          />
+        )}
+        {renderIf(this.state.clientToken !== "")(
+          <BraintreePaymentWebview
+            clientToken={this.state.clientToken}
+            nonceObtainedCallback={this.nonceObtainedCallback}
+            paymentAPIResponse={this.state.paymentAPIResponse}
+            navigationBackCallback={this.navigationBackCallback}
+            options={{
+              creditCard: true
+            }}
+          />
+        )}
       </View>
     );
   }

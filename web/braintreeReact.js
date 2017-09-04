@@ -3,14 +3,63 @@
 import React from "./react.min";
 import ReactDOM from "./react-dom.min";
 import { Provider, connect } from "react-redux";
-import { store } from "../redux/store";
-import * as brainTreeUtils from "../utils/braintreeUtils";
+import { store } from "./store";
 import renderIf from "render-if";
 import { Spinner } from "react-activity";
 import dropin from "braintree-web-drop-in";
 
-class AppComponent extends React.Component {
+class BraintreeHTMLComponent extends React.Component {
   constructor() {
+    super();
+    this.state = {
+      currentPaymentStatus: null
+    };
+  }
+
+  componentWillReceiveProps = nextProps => {
+    alert(nextProps);
+    console.log({ nextProps });
+    if (nextProps.paymentStatus !== this.state.currentPaymentStatus) {
+      switch (nextProps.paymentStatus) {
+        case "CLIENT_TOKEN_RECEVIED":
+          getBraintreeUIElement(this.props.componentState.clientToken);
+          break;
+        default:
+          console.log("ignoring paymentStatusChange");
+          break;
+      }
+      console.log(nextProps.paymentAPIResponse);
+      this.setState({ currentPaymentStatus: nextProps.paymentStatus });
+    }
+  };
+
+  getBraintreeUIElement = clientToken => {
+    let that = this;
+    console.log("getBraintreeUIElement");
+    this.props.dispatch(actions.updatePaymentStatus("REQUEST_UI_PENDING"));
+
+    dropin
+      .create({
+        authorization: this.state.clientToken,
+        container: "#dropin-container"
+      })
+      .then(instance => {
+        this.props.dispatch(
+          actions.updatePaymentStatus("REQUEST_UI_FULFILLED", {
+            instance
+          })
+        );
+      })
+      .catch(function(err) {
+        // Handle any errors that might've occurred when creating Drop-in
+        this.props.dispatch(
+          actions.updatePaymentStatus("REQUEST_UI_REJECTED", {
+            err
+          })
+        );
+      });
+  };
+  /*constructor() {
     super();
     this.state = {
       paymentState: null,
@@ -23,7 +72,7 @@ class AppComponent extends React.Component {
   }
 
   componentDidMount = () => {
-    // add an event listener for messages from the parent React Native component
+     // add an event listener for messages from the parent React Native component
     this.webComponent.addEventListener(
       "message",
       (event) => {
@@ -94,29 +143,7 @@ class AppComponent extends React.Component {
   };
 
   createBraintreeUI = () => {
-    let that = this;
-    console.log("createBraintreeUI");
-    this.setState({ paymentState: "RequestUIPending" }, () => {
-      dropin
-        .create({
-          authorization: this.state.clientToken,
-          container: "#dropin-container"
-        })
-        .then(instance => {
-          console.log({ instance });
-          that.setState({
-            instance,
-            paymentState: "RequestUIFullfilled"
-          });
-        })
-        .catch(function(err) {
-          // Handle any errors that might've occurred when creating Drop-in
-          that.setState({
-            msg: err,
-            paymentState: "RequestUIRejected"
-          });
-        });
-    });
+    
   };
 
   submitPaymentMethod = () => {
@@ -200,10 +227,9 @@ class AppComponent extends React.Component {
         break;
     }
   };
-
+ */
   render = () => {
-    console.log("paymentState: ", this.state.paymentState);
-    let renderBody = this.renderBody(this.state.paymentState);
+    console.log("from store: ", this.props.componentState.testData);
 
     return (
       <Provider store={store}>
@@ -213,8 +239,10 @@ class AppComponent extends React.Component {
           }}
         >
           <div id="dropin-container" />
-          {renderBody}
-          <div>message: {this.state.message}</div>
+          <div>HTML component</div>
+          <div id="submit-button" onClick={this.submitPurchase}>
+            Submit Purchase
+          </div>
         </div>
       </Provider>
     );
@@ -225,7 +253,7 @@ const mapStateToProps = state => {
   return Object.assign(
     {},
     {
-      cart: state.cart
+      componentState: state.componentState
     }
   );
 };
@@ -237,6 +265,10 @@ function connectWithStore(store, WrappedComponent, ...args) {
   };
 }
 
-const App = connectWithStore(store, AppComponent, mapStateToProps);
+const BraintreeHTML = connectWithStore(
+  store,
+  BraintreeHTMLComponent,
+  mapStateToProps
+);
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<BraintreeHTML />, document.getElementById("root"));

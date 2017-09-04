@@ -3,7 +3,7 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: "./web/index.js",
+  entry: "./web/braintreeReact.js",
   output: {
     path: path.join(__dirname, "dist"),
     filename: "[name].bundle.js"
@@ -29,6 +29,7 @@ module.exports = {
               "react",
               "stage-2"
             ],
+            plugins: ["babel-plugin-transform-object-rest-spread"],
             babelrc: false
           }
         }
@@ -37,7 +38,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./web/index.html",
+      template: "./web/braintreeReact.html",
       inject: "body"
     })
   ]

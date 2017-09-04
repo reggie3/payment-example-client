@@ -1,5 +1,5 @@
-var client = require("braintree-web/client");
-const URL = `https://o2ouqqruk2.execute-api.us-east-1.amazonaws.com/prod`;
+import Secrets from '../secrets';
+const URL = Secrets.API_URL;
 
 export const getClientToken = () => {
 
