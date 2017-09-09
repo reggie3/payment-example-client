@@ -139,9 +139,10 @@ PAYPAL_NON_LINKED_SANDBOX:'A <a href="https://developers.braintreepayments.com/g
 ANALYTICS_REQUEST_TIMEOUT_MS:2000,
 ANALYTICS_PREFIX:'web.dropin.',
 CHANGE_ACTIVE_PAYMENT_METHOD_TIMEOUT:200,
-CHECKOUT_JS_SOURCE:'https://www.paypalobjects.com/api/checkout.4.0.95.min.js',
+CHECKOUT_JS_SOURCE:'https://www.paypalobjects.com/api/checkout.4.0.110.min.js',
 INTEGRATION:'dropin2',
 PAYPAL_CHECKOUT_SCRIPT_ID:'braintree-dropin-paypal-checkout-script',
+DATA_COLLECTOR_SCRIPT_ID:'braintree-dropin-data-collector-script',
 STYLESHEET_ID:'braintree-dropin-stylesheet'};
 
 /***/ }),
@@ -442,7 +443,7 @@ sendEvent:sendAnalyticsEvent};
 "use strict";
 
 
-var VERSION="3.22.0";
+var VERSION="3.22.2";
 var PLATFORM='web';
 
 module.exports={
@@ -636,7 +637,7 @@ module.exports=uuid;
 
 var enumerate=__webpack_require__(13);
 var errors=__webpack_require__(17);
-var VERSION="3.22.0";
+var VERSION="3.22.2";
 
 var constants={
 VERSION:VERSION,
@@ -960,7 +961,7 @@ _atob:atob};
 var BraintreeError=__webpack_require__(2);
 var Client=__webpack_require__(46);
 var getConfiguration=__webpack_require__(63).getConfiguration;
-var VERSION="3.22.0";
+var VERSION="3.22.2";
 var Promise=__webpack_require__(5);
 var wrapPromise=__webpack_require__(3);
 var sharedErrors=__webpack_require__(10);
@@ -1748,8 +1749,9 @@ BaseView.apply(this,arguments);
 
 BasePayPalView.prototype=Object.create(BaseView.prototype);
 
-BasePayPalView.prototype._initialize=function(isCredit){
+BasePayPalView.prototype.initialize=function(){
 var asyncDependencyTimeoutHandler;
+var isCredit=Boolean(this._isPayPalCredit);
 var setupComplete=false;
 var self=this;
 var paypalType=isCredit?'paypalCredit':'paypal';
@@ -1765,19 +1767,11 @@ error:new DropinError('There was an error connecting to PayPal.')});
 
 },ASYNC_DEPENDENCY_TIMEOUT);
 
-btPaypal.create({client:this.client},function(err,paypalInstance){
+return btPaypal.create({client:this.client}).then(function(paypalInstance){
 var checkoutJSConfiguration;
 var buttonSelector='[data-braintree-id="paypal-button"]';
 var environment=self.client.getConfiguration().gatewayConfiguration.environment==='production'?'production':'sandbox';
 var locale=self.model.merchantConfiguration.locale;
-
-if(err){
-self.model.asyncDependencyFailed({
-view:self.ID,
-error:err});
-
-return;
-}
 
 self.paypalInstance=paypalInstance;
 
@@ -1809,12 +1803,12 @@ buttonSelector='[data-braintree-id="paypal-credit-button"]';
 checkoutJSConfiguration.style.label='credit';
 }
 
-global.paypal.Button.render(checkoutJSConfiguration,buttonSelector).then(function(){
+return global.paypal.Button.render(checkoutJSConfiguration,buttonSelector).then(function(){
 self.model.asyncDependencyReady();
 setupComplete=true;
 clearTimeout(asyncDependencyTimeoutHandler);
-}).catch(reportError);
 });
+}).catch(reportError);
 
 function reportError(err){
 if(setupComplete){
@@ -1822,7 +1816,7 @@ self.model.reportError(err);
 }else{
 self.model.asyncDependencyFailed({
 view:self.ID,
-error:new DropinError(err)});
+error:err});
 
 clearTimeout(asyncDependencyTimeoutHandler);
 }
@@ -2220,31 +2214,37 @@ _reactNativeWebviewMessaging2.default.emit("goBack");
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _get=function get(object,property,receiver){if(object===null)object=Function.prototype;var desc=Object.getOwnPropertyDescriptor(object,property);if(desc===undefined){var parent=Object.getPrototypeOf(object);if(parent===null){return undefined;}else{return get(parent,property,receiver);}}else if("value"in desc){return desc.value;}else{var getter=desc.get;if(getter===undefined){return undefined;}return getter.call(receiver);}};var _events=__webpack_require__(43);var _events2=_interopRequireDefault(_events);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}var
+var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if("value"in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor);}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor;};}();var _get=function get(object,property,receiver){if(object===null)object=Function.prototype;var desc=Object.getOwnPropertyDescriptor(object,property);if(desc===undefined){var parent=Object.getPrototypeOf(object);if(parent===null){return undefined;}else{return get(parent,property,receiver);}}else if("value"in desc){return desc.value;}else{var getter=desc.get;if(getter===undefined){return undefined;}return getter.call(receiver);}};var _events=__webpack_require__(43);var _events2=_interopRequireDefault(_events);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj};}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError("Cannot call a class as a function");}}function _possibleConstructorReturn(self,call){if(!self){throw new ReferenceError("this hasn't been initialised - super() hasn't been called");}return call&&(typeof call==="object"||typeof call==="function")?call:self;}function _inherits(subClass,superClass){if(typeof superClass!=="function"&&superClass!==null){throw new TypeError("Super expression must either be null or a function, not "+typeof superClass);}subClass.prototype=Object.create(superClass&&superClass.prototype,{constructor:{value:subClass,enumerable:false,writable:true,configurable:true}});if(superClass)Object.setPrototypeOf?Object.setPrototypeOf(subClass,superClass):subClass.__proto__=superClass;}
 
-RNMessagesChannel=function(_EventEmitter){_inherits(RNMessagesChannel,_EventEmitter);function RNMessagesChannel(){_classCallCheck(this,RNMessagesChannel);return _possibleConstructorReturn(this,(RNMessagesChannel.__proto__||Object.getPrototypeOf(RNMessagesChannel)).apply(this,arguments));}_createClass(RNMessagesChannel,[{key:'sendJSON',value:function sendJSON(
+
+var UNIQUE_MESSAGE_PREFIX="f251c210-e7c9-42fa-bae3-b9352ec3722a";
+
+
+
+function createStringified(type,payload){
+return JSON.stringify({
+type:type,
+payload:payload});
+
+}var
+
+RNMessagesChannel=function(_EventEmitter){_inherits(RNMessagesChannel,_EventEmitter);function RNMessagesChannel(){_classCallCheck(this,RNMessagesChannel);return _possibleConstructorReturn(this,(RNMessagesChannel.__proto__||Object.getPrototypeOf(RNMessagesChannel)).apply(this,arguments));}_createClass(RNMessagesChannel,[{key:"sendJSON",value:function sendJSON(
 json){
-window.postMessage(JSON.stringify({
-type:'json',
-payload:json}));
-
-}},{key:'send',value:function send(
+window.postMessage(UNIQUE_MESSAGE_PREFIX+createStringified("json",json));
+}},{key:"send",value:function send(
 
 string){
-window.postMessage(JSON.stringify({
-type:'text',
-payload:string}));
-
-}},{key:'emit',value:function emit(
+window.postMessage(UNIQUE_MESSAGE_PREFIX+createStringified("text",string));
+}},{key:"emit",value:function emit(
 
 eventName,eventData,fromRN){
-_get(RNMessagesChannel.prototype.__proto__||Object.getPrototypeOf(RNMessagesChannel.prototype),'emit',this).call(this,eventName,eventData);
+_get(RNMessagesChannel.prototype.__proto__||Object.getPrototypeOf(RNMessagesChannel.prototype),"emit",this).call(this,eventName,eventData);
 
 if(fromRN){
 return;
 }
 
-window.postMessage(JSON.stringify({
+window.postMessage(UNIQUE_MESSAGE_PREFIX+JSON.stringify({
 type:'event',
 meta:{
 eventName:eventName},
@@ -2673,6 +2673,10 @@ return arg===void 0;
 
 
 
+
+
+
+
 var Dropin=__webpack_require__(45);
 var client=__webpack_require__(23);
 var createFromScriptTag=__webpack_require__(133);
@@ -2682,7 +2686,17 @@ var DropinError=__webpack_require__(4);
 var Promise=__webpack_require__(7);
 var wrapPromise=__webpack_require__(3);
 
-var VERSION="1.6.1";
+var VERSION="1.7.0";
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3020,7 +3034,7 @@ VERSION:VERSION};
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(global) {
 
 var assign=__webpack_require__(11).assign;
 var analytics=__webpack_require__(8);
@@ -3051,7 +3065,23 @@ paymentOptionIDs.paypal,
 paymentOptionIDs.paypalCredit];
 
 var DEFAULT_CHECKOUTJS_LOG_LEVEL='warn';
-var VERSION="1.6.1";
+var VERSION="1.7.0";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3205,7 +3235,7 @@ constructor:Dropin});
 
 
 Dropin.prototype._initialize=function(callback){
-var localizedStrings,localizedHTML,strings;
+var localizedStrings,localizedHTML,paypalScriptOptions;
 var dropinInstance=this;
 var container=this._merchantConfiguration.container||this._merchantConfiguration.selector;
 
@@ -3238,22 +3268,22 @@ return;
 }
 
 
-strings=assign({},translations.en);
+this._strings=assign({},translations.en);
 if(this._merchantConfiguration.locale){
 localizedStrings=translations[this._merchantConfiguration.locale]||translations[this._merchantConfiguration.locale.split('_')[0]];
 
-strings=assign(strings,localizedStrings);
+this._strings=assign(this._strings,localizedStrings);
 }
 
 if(this._merchantConfiguration.translations){
-strings=assign(strings,this._merchantConfiguration.translations);
+this._strings=assign(this._strings,this._merchantConfiguration.translations);
 }
 
-localizedHTML=Object.keys(strings).reduce(function(result,stringKey){
-var stringValue=strings[stringKey];
+localizedHTML=Object.keys(this._strings).reduce(function(result,stringKey){
+var stringValue=this._strings[stringKey];
 
 return result.replace(RegExp('{{'+stringKey+'}}','g'),stringValue);
-},mainHTML);
+}.bind(this),mainHTML);
 
 this._dropinWrapper.innerHTML=svgHTML+localizedHTML;
 container.appendChild(this._dropinWrapper);
@@ -3275,15 +3305,19 @@ callback(modelError);
 return;
 }
 
+this._model.on('cancelInitialization',function(err){
+analytics.sendEvent(this._client,'load-error');
+this._dropinWrapper.innerHTML='';
+callback(err);
+}.bind(this));
+
 this._model.on('asyncDependenciesReady',function(){
 if(this._model.dependencySuccessCount>=1){
 analytics.sendEvent(this._client,'appeared');
 this._disableErroredPaymentMethods();
 callback(null,dropinInstance);
 }else{
-analytics.sendEvent(this._client,'load-error');
-this._dropinWrapper.innerHTML='';
-callback(new DropinError('All payment options failed to load.'));
+this._model.cancelInitialization(new DropinError('All payment options failed to load.'));
 }
 }.bind(this));
 
@@ -3299,21 +3333,20 @@ this._model.on('paymentOptionSelected',function(event){
 this._emit('paymentOptionSelected',event);
 }.bind(this));
 
-function createMainView(){
-dropinInstance._mainView=new MainView({
-client:dropinInstance._client,
-element:dropinInstance._dropinWrapper,
-model:dropinInstance._model,
-strings:strings});
-
-}
-
 paypalRequired=this._supportsPaymentOption(paymentOptionIDs.paypal)||this._supportsPaymentOption(paymentOptionIDs.paypalCredit);
 
 if(paypalRequired&&!document.querySelector('#'+constants.PAYPAL_CHECKOUT_SCRIPT_ID)){
-this._loadPayPalScript(createMainView);
+paypalScriptOptions={
+src:constants.CHECKOUT_JS_SOURCE,
+id:constants.PAYPAL_CHECKOUT_SCRIPT_ID,
+logLevel:this._merchantConfiguration.paypal&&this._merchantConfiguration.paypal.logLevel||DEFAULT_CHECKOUTJS_LOG_LEVEL};
+
+
+this._loadScript(paypalScriptOptions,function(){
+this._setUpDependenciesAndViews();
+}.bind(this));
 }else{
-createMainView();
+this._setUpDependenciesAndViews();
 }
 }.bind(this));
 };
@@ -3379,6 +3412,43 @@ this._navigateToInitialView();
 this._model.removeActivePaymentMethod();
 };
 
+Dropin.prototype._setUpDataCollector=function(){
+var self=this;
+var config=assign({},self._merchantConfiguration.dataCollector,{client:self._client});
+
+this._model.asyncDependencyStarting();
+global.braintree.dataCollector.create(config).then(function(instance){
+self._dataCollectorInstance=instance;
+self._model.asyncDependencyReady();
+}).catch(function(err){
+self._model.cancelInitialization(new DropinError({
+message:'Data Collector failed to set up.',
+braintreeWebError:err}));
+
+});
+};
+
+Dropin.prototype._setUpDependenciesAndViews=function(){
+var braintreeWebVersion,dataCollectorScriptOptions;
+
+if(this._merchantConfiguration.dataCollector&&!document.querySelector('#'+constants.DATA_COLLECTOR_SCRIPT_ID)){
+braintreeWebVersion=this._client.getVersion();
+dataCollectorScriptOptions={
+src:'https://js.braintreegateway.com/web/'+braintreeWebVersion+'/js/data-collector.min.js',
+id:constants.DATA_COLLECTOR_SCRIPT_ID};
+
+
+this._loadScript(dataCollectorScriptOptions,this._setUpDataCollector.bind(this));
+}
+
+this._mainView=new MainView({
+client:this._client,
+element:this._dropinWrapper,
+model:this._model,
+strings:this._strings});
+
+};
+
 Dropin.prototype._removeUnvaultedPaymentMethods=function(filter){
 filter=filter||function(){return true;};
 
@@ -3412,14 +3482,17 @@ Dropin.prototype._supportsPaymentOption=function(paymentOption){
 return this._model.supportedPaymentOptions.indexOf(paymentOption)!==-1;
 };
 
-Dropin.prototype._loadPayPalScript=function(callback){
+Dropin.prototype._loadScript=function(options,callback){
 var script=document.createElement('script');
 
-script.src=constants.CHECKOUT_JS_SOURCE;
-script.id=constants.PAYPAL_CHECKOUT_SCRIPT_ID;
+script.src=options.src;
+script.id=options.id;
 script.async=true;
+
+if(options.logLevel){
+script.setAttribute('data-log-level',options.logLevel);
+}
 script.addEventListener('load',callback);
-script.setAttribute('data-log-level',this._merchantConfiguration.paypal.logLevel||DEFAULT_CHECKOUTJS_LOG_LEVEL);
 this._dropinWrapper.appendChild(script);
 };
 
@@ -3458,8 +3531,48 @@ errorMessageDiv.textContent=error.message;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Dropin.prototype.requestPaymentMethod=function(){
-return this._mainView.requestPaymentMethod();
+return this._mainView.requestPaymentMethod().then(function(payload){
+if(this._dataCollectorInstance){
+payload.deviceData=this._dataCollectorInstance.deviceData;
+}
+
+return formatPaymentMethodPayload(payload);
+}.bind(this));
 };
 
 Dropin.prototype._removeStylesheet=function(){
@@ -3523,7 +3636,7 @@ callback(paymentMethods);
 
 
 Dropin.prototype.teardown=function(){
-var mainviewTeardownError;
+var mainviewTeardownError,dataCollectorError;
 var promise=Promise.resolve();
 var self=this;
 
@@ -3537,11 +3650,24 @@ mainviewTeardownError=err;
 });
 }
 
+if(this._dataCollectorInstance){
+promise.then(function(){
+return this._dataCollectorInstance.teardown().catch(function(error){
+dataCollectorError=new DropinError({
+message:'Drop-in errored tearing down Data Collector.',
+braintreeWebError:error});
+
+});
+}.bind(this));
+}
+
 return promise.then(function(){
 return self._removeDropinWrapper();
 }).then(function(){
 if(mainviewTeardownError){
 return Promise.reject(mainviewTeardownError);
+}else if(dataCollectorError){
+return Promise.reject(dataCollectorError);
 }
 
 return Promise.resolve();
@@ -3575,10 +3701,19 @@ if(paymentMethod.type===constants.paymentMethodTypes.card){
 formattedPaymentMethod.description=paymentMethod.description;
 }
 
+if(paymentMethod.deviceData){
+formattedPaymentMethod.deviceData=paymentMethod.deviceData;
+}
+
+if(paymentMethod.binData){
+formattedPaymentMethod.binData=paymentMethod.binData;
+}
+
 return formattedPaymentMethod;
 }
 
 module.exports=wrapPrototype(Dropin);
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
 /* 46 */
@@ -5051,6 +5186,10 @@ this._emit('asyncDependenciesReady');
 }
 };
 
+DropinModel.prototype.cancelInitialization=function(error){
+this._emit('cancelInitialization',error);
+};
+
 DropinModel.prototype.reportError=function(error){
 this._emit('errorOccurred',error);
 };
@@ -5183,6 +5322,7 @@ model:this.model,
 client:this.client,
 strings:this.strings});
 
+paymentSheetView.initialize();
 
 this.addView(paymentSheetView);
 ids.push(paymentSheetView.ID);
@@ -5454,15 +5594,13 @@ var cardIconHTML="<div data-braintree-id=\"visa-card-icon\" class=\"braintree-sh
 
 function CardView(){
 BaseView.apply(this,arguments);
-
-this._initialize();
 }
 
 CardView.prototype=Object.create(BaseView.prototype);
 CardView.prototype.constructor=CardView;
 CardView.ID=CardView.prototype.ID=constants.paymentOptionIDs.card;
 
-CardView.prototype._initialize=function(){
+CardView.prototype.initialize=function(){
 var cvvFieldGroup,postalCodeFieldGroup;
 var cardholderNameField=this.getElementById('cardholder-name-field-group');
 var cardIcons=this.getElementById('card-view-icons');
@@ -5499,15 +5637,7 @@ cardholderNameField.parentNode.removeChild(cardholderNameField);
 
 this.model.asyncDependencyStarting();
 
-hostedFields.create(hfOptions,function(err,hostedFieldsInstance){
-if(err){
-this.model.asyncDependencyFailed({
-view:this.ID,
-error:err});
-
-return;
-}
-
+return hostedFields.create(hfOptions).then(function(hostedFieldsInstance){
 this.hostedFieldsInstance=hostedFieldsInstance;
 this.hostedFieldsInstance.on('blur',this._onBlurEvent.bind(this));
 this.hostedFieldsInstance.on('cardTypeChange',this._onCardTypeChangeEvent.bind(this));
@@ -5516,6 +5646,11 @@ this.hostedFieldsInstance.on('notEmpty',this._onNotEmptyEvent.bind(this));
 this.hostedFieldsInstance.on('validityChange',this._onValidityChangeEvent.bind(this));
 
 this.model.asyncDependencyReady();
+}.bind(this)).catch(function(err){
+this.model.asyncDependencyFailed({
+view:this.ID,
+error:err});
+
 }.bind(this));
 };
 
@@ -5999,7 +6134,7 @@ var HostedFields=__webpack_require__(72);
 var supportsInputFormatting=__webpack_require__(95);
 var wrapPromise=__webpack_require__(3);
 var Promise=__webpack_require__(5);
-var VERSION="3.22.0";
+var VERSION="3.22.2";
 
 
 
@@ -6216,7 +6351,7 @@ var EventEmitter=__webpack_require__(89);
 var injectFrame=__webpack_require__(90);
 var analytics=__webpack_require__(20);
 var whitelistedFields=constants.whitelistedFields;
-var VERSION="3.22.0";
+var VERSION="3.22.2";
 var methods=__webpack_require__(91);
 var convertMethodsToError=__webpack_require__(92);
 var sharedErrors=__webpack_require__(10);
@@ -8140,6 +8275,17 @@ var prefixPattern,exactPattern,dupe;
 
 if(!x){return null;}
 
+
+
+
+
+
+
+
+
+
+
+
 prefixPattern=x.prefixPattern.source;
 exactPattern=x.exactPattern.source;
 dupe=JSON.parse(JSON.stringify(x));
@@ -8195,7 +8341,7 @@ type:DINERS_CLUB,
 prefixPattern:/^(3|3[0689]|30[0-5])$/,
 exactPattern:/^3(0[0-5]|[689])\d*$/,
 gaps:[4,10],
-lengths:[14],
+lengths:[14,16,19],
 code:{
 name:CVV,
 size:3}};
@@ -8245,7 +8391,7 @@ types[MAESTRO]={
 niceType:'Maestro',
 type:MAESTRO,
 prefixPattern:/^(5|5[06-9]|6\d*)$/,
-exactPattern:/^5[06-9]\d*$/,
+exactPattern:/^(5[06-9]|6[37])\d*$/,
 gaps:[4,8,12],
 lengths:[12,13,14,15,16,17,18,19],
 code:{
@@ -8480,8 +8626,6 @@ var BasePayPalView=__webpack_require__(36);
 
 function PayPalView(){
 BasePayPalView.apply(this,arguments);
-
-this._initialize(false);
 }
 
 PayPalView.prototype=Object.create(BasePayPalView.prototype);
@@ -8508,7 +8652,7 @@ var Promise=__webpack_require__(5);
 var wrapPromise=__webpack_require__(3);
 var PayPalCheckout=__webpack_require__(104);
 var sharedErrors=__webpack_require__(10);
-var VERSION="3.22.0";
+var VERSION="3.22.2";
 
 
 
@@ -9005,7 +9149,7 @@ var BasePayPalView=__webpack_require__(36);
 function PayPalCreditView(){
 BasePayPalView.apply(this,arguments);
 
-this._initialize(true);
+this._isPayPalCredit=true;
 }
 
 PayPalCreditView.prototype=Object.create(BasePayPalView.prototype);
@@ -10446,6 +10590,9 @@ var WHITELISTED_DATA_ATTRIBUTES=[
 'locale',
 'payment-option-priority',
 
+'data-collector.kount',
+'data-collector.paypal',
+
 'card.cardholderName',
 'card.cardholderName.required',
 
@@ -10457,6 +10604,19 @@ var WHITELISTED_DATA_ATTRIBUTES=[
 'paypal-credit.currency',
 'paypal-credit.flow'];
 
+
+function injectHiddenInput(name,value,form){
+var input=form.querySelector('[name="'+name+'"]');
+
+if(!input){
+input=document.createElement('input');
+input.type='hidden';
+input.name=name;
+form.appendChild(input);
+}
+
+input.value=value;
+}
 
 function addCompositeKeyValuePairToObject(obj,key,value){
 var decomposedKeys=key.split('.');
@@ -10525,22 +10685,15 @@ createFunction(createOptions).then(function(instance){
 analytics.sendEvent(instance._client,'integration-type.script-tag');
 form.addEventListener('submit',function(){
 instance.requestPaymentMethod(function(requestPaymentError,payload){
-var paymentMethodNonce;
-
 if(requestPaymentError){
 return;
 }
 
-paymentMethodNonce=form.querySelector('[name="payment_method_nonce"]');
+injectHiddenInput('payment_method_nonce',payload.nonce,form);
 
-if(!paymentMethodNonce){
-paymentMethodNonce=document.createElement('input');
-paymentMethodNonce.type='hidden';
-paymentMethodNonce.name='payment_method_nonce';
-form.appendChild(paymentMethodNonce);
+if(payload.deviceData){
+injectHiddenInput('device_data',payload.deviceData,form);
 }
-
-paymentMethodNonce.value=payload.nonce;
 
 form.submit();
 });
