@@ -11,7 +11,7 @@ import actions from "../actions/actions";
 import * as brainTreeUtils from "../utils/braintreeUtils";
 import renderIf from "render-if";
 import { globalStyles } from "../globals/styles";
-import BraintreePaymentWebview from "../web/BraintreePaymentWebview";
+import BraintreePaymentWebview from "../Components/BraintreePaymentWebview";
 
 class BraintreePaymentScreen extends React.Component {
   constructor() {
@@ -30,7 +30,6 @@ class BraintreePaymentScreen extends React.Component {
       .then(response => {
         // console.log({ response });
         if (response.type === "success") {
-          debugger;
           let clientToken = response.response.result.clientToken;
           this.setState({
             clientToken
@@ -83,7 +82,7 @@ class BraintreePaymentScreen extends React.Component {
         {renderIf(this.state.clientToken !== "")(
           <BraintreePaymentWebview
             clientToken={this.state.clientToken}
-            handlePaymentMethod={this.handlePaymentMethod}
+            nonceObtainedCallback={this.handlePaymentMethod}
             navigationBackCallback={this.navigationBackCallback}
             options={{
               creditCard: true

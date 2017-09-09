@@ -5,6 +5,11 @@ let cartActions = {
       item,
       amount
     };
+  },
+  emptyCart: () => {
+    return {
+      type: "EMPTY_CART"
+    };
   }
 }
 export default cartActions;

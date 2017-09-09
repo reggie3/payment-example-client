@@ -59,6 +59,7 @@
     "render-if": "^0.1.1",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
+    "util": "^0.10.3",
     "uuid": "^3.1.0",
     "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1"

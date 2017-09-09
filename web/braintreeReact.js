@@ -6,15 +6,24 @@ import renderIf from "render-if";
 import { Spinner } from "react-activity";
 import dropin from "braintree-web-drop-in";
 import glamorous from "glamorous";
+import RNMessageChannel from "./react-native-webview-messaging";
+const util = require("util");
 
-const Button = glamorous.span({
+const DropInContainer = glamorous.div({
+  flex: 1
+});
+const ButtonContainer = glamorous.div({
+  flex: 1
+});
+const Button = glamorous.div({
   borderRadius: "2px",
   padding: "2px 10px 2px 10px",
   backgroundColor: "#2ecc71",
   fontSize: "1.25em",
   color: "white",
   fontFamily: "arial",
-  boxShadow: "0 1px 4px rgba(0, 0, 0, .6)"
+  boxShadow: "0 1px 4px rgba(0, 0, 0, .6)",
+  textAlign: "center"
 });
 const PaymentBackground = glamorous.div({
   backgroundColor: "#FED2F1",
@@ -22,7 +31,9 @@ const PaymentBackground = glamorous.div({
   top: 0,
   bottom: 0,
   left: 0,
-  right: 0
+  right: 0,
+  display: "flex",
+  flexDirection: "column"
 });
 
 // from user Dryymoon at this Github thread
@@ -58,10 +69,15 @@ function awaitPostMessage() {
 
 // print something in an html element
 const PrintElement = data => {
-  var el = document.createElement("pre");
-  var str = JSON.stringify(data);
-  el.innerHTML = str;
-  document.getElementById("messages").appendChild(el);
+  if (typeof data === "object") {
+    let el = document.createElement("pre");
+    el.innerHTML = util.inspect(data, { showHidden: false, depth: null });
+    document.getElementById("messages").appendChild(el);
+  } else if (typeof data === "string") {
+    let el = document.createElement("pre");
+    el.innerHTML = data;
+    document.getElementById("messages").appendChild(el);
+  }
 };
 
 class BraintreeHTML extends React.Component {
@@ -73,160 +89,116 @@ class BraintreeHTML extends React.Component {
   }
 
   componentWillMount = () => {
-    awaitPostMessage();
-    this.addEventListeners();
+    // awaitPostMessage();
   };
 
-  componentWillUnmount = () => {
-    window.removeEventListener("message", this.handleMessage);
-    document.removeEventListener("message", this.handleMessage);
-  };
+  componentWillUnmount = () => {};
 
   componentDidMount = () => {
     PrintElement("componentDidMount success");
-    this.sendMessageToWebview("DEBUG", "componentDidMount");
-    // this.onMessage(JSON.stringify({type: "CLIENT_TOKEN_RECEIVED", payload: "nextProps.clientToken"}))
-  };
-
-  sendMessageToWebview = (type, payload) => {
-    let message = {
-      type,
-      payload
-    };
-    PrintElement("sending: ", message);
-
-    if (window) window.postMessage(JSON.stringify(message), "*");
-    else if (document) document.postMessage(JSON.stringify(message), "*");
+    this.registerMessageListeners();
   };
 
   /*******************************
    * add event listeners to receive events from parent
   */
-  addEventListeners = () => {
-    // add an event listener to receive messages from parent WebView
-    // there is some confusion between document and reality about the use of
-    // document vs window in some broswers:
-    // https://stackoverflow.com/questions/41160221/react-native-webview-postmessage-does-not-work
-    if (document) {
-      document.addEventListener("message", this.onMessage);
-    }
-    if (window) {
-      window.addEventListener("message", this.onMessage);
-    }
+  registerMessageListeners = () => {
+    PrintElement("registering message listeners");
+
+    // should receive client token message almost immediately upon mounting
+    RNMessageChannel.on("TOKEN_RECEIVED", event => {
+      PrintElement(event);
+      if (event.payload.options.creditCard) {
+        this.createCreditCardUI(event.payload.clientToken);
+      }
+      if (event.payload.options.paypal) {
+        this.createPaypalUI(event.payload.clientToken);
+      }
+    });
+
+    // when the call is made to the braintree purchasing server
+    // used to show the user some feedback that the purchase is in process
+    RNMessageChannel.on("PURCHASE_PENDING", event => {
+      PrintElement("PURCHASE_PENDING");
+    });
+
+    // when the purchase succeeds
+    // used to show the user some feedback that the purchase has completed successfully
+    RNMessageChannel.on("PURCHASE_FULFILLED", event => {
+      PrintElement("PURCHASE_FULFILLED");
+    });
+
+    // when the purchase succeeds
+    // used to show the user some feedback that the purchase has failed to complete
+    RNMessageChannel.on("PURCHASE_REJECTED", event => {
+      PrintElement("PURCHASE_REJECTED");
+    });
+
+    PrintElement("registering message listeners - completed");
   };
 
   /*******************************
-   * handle messages sent from parent
+   * create the Paypal payment UI element
   */
-  onMessage = event => {
-    // debugger;
-    // console.log("Received post message", event);
-    
-    
-    let data = JSON.parse(event.nativeEvent.data);
-    this.sendMessageToWebview("DEBUG", `received  ${data.type}`);
-    PrintElement(data);
-    switch (data.type) {
-      case "CLIENT_TOKEN_RECEIVED":
-        PrintElement(data.payload);
-        this.getBraintreeUIElement(data.payload);
-        break;
-      default:
-        PrintElement("Unhandled case in handleMessage");
-        break;
-    }
+  createPaypalUI = clientToken => {
+    console.log("Not implmented");
   };
 
   /*******************************
    * create the Braintree UI element
   */
-  getBraintreeUIElement = clientToken => {
-    PrintElement(clientToken);
-    let that = this;
+  createCreditCardUI = clientToken => {
+    PrintElement(`createCreditCardUI: ${clientToken}`);
 
-    // create the Braintree UI in the div
     dropin
       .create({
         authorization: clientToken,
         container: "#dropin-container"
       })
       .then(instance => {
-        window.postMessage(
-          JSON.stringify({
-            type: "event",
-            name: "REQUEST_UI_FULFILLED"
-          }),
-          "*"
-        );
-        document
-          .getElementById("submit-button")
-          .addEventListener(
-            "click",
-            handleSubmitPurchaseButtonClicked.bind(instance)
-          );
+        PrintElement(instance);
+        this.setState({ instance });
       })
       .catch(function(err) {
         // Handle any errors that might've occurred when creating Drop-in
-        this.props.dispatch(
-          window.postMessage(
-            JSON.stringify({
-              type: "event",
-              name: "REQUEST_UI_REJECTED",
-              payload: err
-            }),
-            "*"
-          )
-        );
+        RNMessageChannel.sendJSON({
+          type: "error",
+          err
+        });
       });
   };
   /***********************************************
- *  handler for when the purchase button is clicke
- */
-  handleSubmitPurchaseButtonClicked = instance => {
-    PrintElement({
-      msg: "submitPurchase clicked",
-      instance
-    });
+  *  handler for when the purchase button is clicke
+  */
+  handleSubmitPurchaseButtonClicked = () => {
+    // PrintElement(`handleSubmitPurchaseButtonClicked: ${this.state.instance}`);
 
     // send a message to the parent WebView so that it
     // can display feedback to user
-    this.props.dispatch(
-      window.postMessage(
-        JSON.stringify({
-          type: "event",
-          name: "PURCHASE_SUBMITED",
-          payload
-        }),
-        "*"
-      )
-    );
+    RNMessageChannel.emit("RETRIEVE_NONCE_PENDING", {
+      payload: {
+        type: "success"
+      }
+    });
 
     // request a purchase nonce from the Braintree server
-    instance.requestPaymentMethod(function(err, payload) {
+    this.state.instance.requestPaymentMethod(function(err, response) {
       if (err) {
         // notify the parent WebView if there is an error
-        this.props.dispatch(
-          window.postMessage(
-            JSON.stringify({
-              type: "event",
-              name: "PURCHASE_REJECTED",
-              payload: err
-            }),
-            "*"
-          )
-        );
+        RNMessageChannel.emit("RETRIEVE_NONCE_REJECTED", {
+          payload: {
+            type: "error",
+            err
+          }
+        });
       } else {
         // pass the nonce to the parent WebView if the purchase is successful
-        this.props.dispatch(
-          window.postMessage(
-            JSON.stringify({
-              type: "event",
-              name: "PURCHASE_FULFILLED",
-              payload
-            }),
-            "*"
-          )
-        );
+        RNMessageChannel.emit("RETRIEVE_NONCE_FULFILLED", {
+          payload: {
+            type: "success",
+            response
+          }
+        });
       }
     });
   };
@@ -238,12 +210,18 @@ class BraintreeHTML extends React.Component {
           this.webComponent = component;
         }}
       >
-        <div id="dropin-container" />
-        <div>HTML component</div>
-        <Button id="submit-button" onClick={this.submitPurchase}>
-          Submit Purchase
-        </Button>
-        <div id="messages" />
+        <DropInContainer>
+          <div id="dropin-container" />
+        </DropInContainer>
+        <ButtonContainer>
+          <Button
+            id="submit-button"
+            onClick={this.handleSubmitPurchaseButtonClicked}
+          >
+            Submit Purchase
+          </Button>
+          <div id="messages" />
+        </ButtonContainer>
       </PaymentBackground>
     );
   };
