@@ -26,11 +26,11 @@ class BraintreePaymentScreen extends React.Component {
     brainTreeUtils
       .getClientToken({
         merchantAccountID: null,
-        customerID: '12345678'
-      })
+        customerID: null      })
       .then(response => {
         // console.log({ response });
         if (response.type === "success") {
+          debugger;
           let clientToken = response.response.result.clientToken;
           this.setState({
             clientToken
@@ -43,7 +43,7 @@ class BraintreePaymentScreen extends React.Component {
    * called by BraintreePaymentWebview once a nonce is recieved by
    * the webview and posts the purchase to the applicationServer
    */
-  nonceObtainedCallback = nonce => {
+  handlePaymentMethod = nonce => {
     // make api call to purchase the item using the nonce received
     // from BraintreeWebView Component
     
@@ -83,8 +83,7 @@ class BraintreePaymentScreen extends React.Component {
         {renderIf(this.state.clientToken !== "")(
           <BraintreePaymentWebview
             clientToken={this.state.clientToken}
-            nonceObtainedCallback={this.nonceObtainedCallback}
-            paymentAPIResponse={this.state.paymentAPIResponse}
+            handlePaymentMethod={this.handlePaymentMethod}
             navigationBackCallback={this.navigationBackCallback}
             options={{
               creditCard: true

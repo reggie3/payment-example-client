@@ -1,82 +1,71 @@
 import React from "react";
 import { Text, View, Button, WebView } from "react-native";
-import actions from "./actions";
-import { Provider, connect } from "react-redux";
-import { store } from "./store";
 
-class BraintreePaymentWebviewComponent extends React.Component {
+export default class BraintreePaymentWebviewComponent extends React.Component {
   constructor() {
     super();
     this.state = {
-      currentPaymentStatus: null,
+      currentPaymentStatus: null
     };
   }
 
-  componentDidMount() {
-    // register listeners to listen for events from the html
-    // we'll receive a nonce once the requestPaymentMethodComplete is completed
-    this.props.dispatch(
-      actions.updatePaymentStatus("CLIENT_TOKEN_RECEVIED", {
-        clientToken: this.props.clientToken
-      })
-    );
-  }
+  componentWillMount = () => {
+
+  };
 
   componentWillReceiveProps = nextProps => {
-    console.log({ nextProps });
-    if (nextProps.paymentStatus !== this.state.currentPaymentStatus) {
-      switch(nextProps.paymentStatus){
-        default:
-          console.log('ignoring paymentStatusChange');
-        break;
-      }
-      console.log(nextProps.paymentAPIResponse);
-      this.setState({ currentPaymentStatus: nextProps.paymentStatus });
+    debugger;
+    if (!this.state.clientToken && nextProps.clientToken) {
+      
+      console.log('BraintreePaymentWebview.js - clientToken: ' + nextProps.clientToken);
+      this.sendMessageToWebview("CLIENT_TOKEN_RECEIVED", nextProps.clientToken);
+      this.setState({ clientToken: nextProps.clientToken });
+    }
+  };
+
+
+  sendMessageToWebview = (type, payload) => {
+    let message = {
+      type,
+      payload
+    };
+    console.log('BraintreePaymentWebview.js - sending: ', {message});
+
+    this.webview.postMessage(
+      JSON.stringify(message)
+    );
+  };
+
+  onMessage = event => {
+    debugger;
+    let data = JSON.parse(event.nativeEvent.data);
+    switch(data.type){
+      case "DEBUG":
+      console.log("DEBUG from HTML: ", data.payload);
+      break;
+      case "EVENT":
+      console.log("from HTML: ", data.payload);
+      break;      
     }
   };
 
   render() {
-    console.log("from store: ", this.props.componentState.testData);
-
     return (
-      <Provider store={store}>
         <View
           style={{
             flex: 1,
-            backgroundColor: `blue`
+            backgroundColor: `lightblue`
           }}
         >
           <WebView
-            onLoad={this.sendClientTokenToWebView}
             source={require("../dist/index.html")}
             style={{ flex: 1 }}
             ref={webview => (this.webview = webview)}
+            onMessage={this.onMessage}
           />
           <Text>Webview Component</Text>
         </View>
-      </Provider>
     );
   }
 }
 
-const mapStateToProps = state => {
-  return Object.assign(
-    {},
-    {
-      componentState: state.componentState
-    }
-  );
-};
-
-function connectWithStore(store, WrappedComponent, ...args) {
-  var ConnectedWrappedComponent = connect(...args)(WrappedComponent);
-  return function(props) {
-    return <ConnectedWrappedComponent {...props} store={store} />;
-  };
-}
-
-export default (BraintreePaymentWebview = connectWithStore(
-  store,
-  BraintreePaymentWebviewComponent,
-  mapStateToProps
-));
