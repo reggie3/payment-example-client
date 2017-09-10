@@ -193,9 +193,12 @@ class BraintreeHTML extends React.Component {
             </Button>
           )}
           {renderIf(this.state.currentPaymentStatus === "PURCHASE_FULFILLED")(
-            <Button onClick={this.handleGoBackButtonSubmit}>
-              Return to Shop
-            </Button>
+            <div>
+              <div>Thank you for your purchase! </div>
+              <Button onClick={this.handleGoBackButtonSubmit}>
+                Return to Shop
+              </Button>
+            </div>
           )}
           {renderIf(this.state.currentPaymentStatus === "PURCHASE_REJECTED")(
             <div>

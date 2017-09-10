@@ -45,7 +45,9 @@ class BraintreePaymentScreen extends React.Component {
   handlePaymentMethod = nonce => {
     // make api call to purchase the item using the nonce received
     // from BraintreeWebView Component
-    
+    /* console.log("-------handlePaymentMethod-------");
+    console.log(`nonce: ${nonce}`);
+    console.log(`totalPrice: ${this.props.cart.totalPrice}`); */
     brainTreeUtils
       .postPurchase(nonce, this.props.cart.totalPrice, {})
       .then(response => {

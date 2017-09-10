@@ -1,7 +1,6 @@
 import { createStore, compose, applyMiddleware } from "redux";
 import { createLogger } from "redux-logger";
 import rootReducer from "../reducers/rootReducer";
-import createPromiseMiddleware from "redux-promise-middleware";
 
 export let defaultState = {
   inventory: [
@@ -43,11 +42,10 @@ export let defaultState = {
 };
 
 const logger = createLogger();
-const promiseMiddleware = createPromiseMiddleware();
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 export const store = createStore(
   rootReducer,
   defaultState,
-  composeEnhancers(applyMiddleware(promiseMiddleware, logger))
+  composeEnhancers(applyMiddleware(logger))
 );

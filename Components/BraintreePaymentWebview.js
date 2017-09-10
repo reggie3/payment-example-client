@@ -1,8 +1,8 @@
-import React from "react";
-import { View, ActivityIndicator, StyleSheet } from "react-native";
-import { WebView } from "./rnwm-webview";
-import PropTypes from "prop-types";
-import renderIf from "render-if";
+import React from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { WebView } from './rnwm-webview';
+import PropTypes from 'prop-types';
+import renderIf from 'render-if';
 
 export default class BraintreePaymentWebview extends React.Component {
   constructor() {
@@ -23,24 +23,24 @@ export default class BraintreePaymentWebview extends React.Component {
   registerMessageListeners = () => {
     const { messagesChannel } = this.webview;
 
-    messagesChannel.on("RETRIEVE_NONCE_PENDING", event => {
+    messagesChannel.on('RETRIEVE_NONCE_PENDING', event => {
       this.setState({ showGetNonceActivityIndicator: true });
-      console.log("RETRIEVE_NONCE_PENDING");
+      console.log('RETRIEVE_NONCE_PENDING');
     });
 
-    messagesChannel.on("RETRIEVE_NONCE_FULFILLED", event => {
-      console.log("RETRIEVE_NONCE_FULFILLED");
+    messagesChannel.on('RETRIEVE_NONCE_FULFILLED', event => {
+      console.log('RETRIEVE_NONCE_FULFILLED');
       this.setState({ showGetNonceActivityIndicator: false });
       this.setState({ showSubmitPaymentActivityIndicator: true });
       this.props.nonceObtainedCallback(event.payload.response.nonce);
     });
 
-    messagesChannel.on("RETRIEVE_NONCE_REJECTED", event => {
-      console.log("RETRIEVE_NONCE_REJECTED");
+    messagesChannel.on('RETRIEVE_NONCE_REJECTED', event => {
+      console.log('RETRIEVE_NONCE_REJECTED');
       this.setState({ showGetNonceActivityIndicator: false });
     });
 
-    messagesChannel.on("GO_BACK", () => {
+    messagesChannel.on('GO_BACK', () => {
       this.props.navigationBackCallback();
     });
   };
@@ -48,7 +48,7 @@ export default class BraintreePaymentWebview extends React.Component {
   // send the client token to HTML file to begin the braintree flow
   // called when the HTML in the webview is loaded
   sendClientTokenToHTML = () => {
-    this.webview.emit("TOKEN_RECEIVED", {
+    this.webview.emit('TOKEN_RECEIVED', {
       payload: {
         clientToken: this.props.clientToken,
         options: this.props.options
@@ -58,14 +58,14 @@ export default class BraintreePaymentWebview extends React.Component {
 
   // handle purchase responses that parent component sends after making purchase API call
   handlePurchaseResponse = response => {
-    console.log("handlePurchaseResponse");
-    if (response === "PAYMENT_SUCCESS") {
-      console.log("emitting purchaseSuccess");
+    console.log('handlePurchaseResponse');
+    if (response === 'PAYMENT_SUCCESS') {
+      console.log('emitting purchaseSuccess');
       this.setState({ showSubmitPaymentActivityIndicator: false });
-      this.webview.emit("PURCHASE_FULFILLED");
+      this.webview.emit('PURCHASE_FULFILLED');
     } else {
       this.setState({ showSubmitPaymentActivityIndicator: false });
-      this.webview.emit("PURCHASE_REJECTED");
+      this.webview.emit('PURCHASE_REJECTED');
     }
   };
 
@@ -92,27 +92,31 @@ export default class BraintreePaymentWebview extends React.Component {
         >
           <WebView
             onLoad={this.sendClientTokenToHTML}
-            source={require("../dist/index.html")}
+            source={require('../dist/index.html')}
             style={{ flex: 1 }}
             ref={component => (this.webview = component)}
           />
         </View>
         {renderIf(this.state.showGetNonceActivityIndicator)(
           <View style={styles.activityOverlayStyle}>
-            <ActivityIndicator
-              size="large"
-              animating={this.state.showGetNonceActivityIndicator}
-              color="yellow"
-            />
+            <View style={styles.activityIndicatorContainer}>
+              <ActivityIndicator
+                size="large"
+                animating={this.state.showGetNonceActivityIndicator}
+                color="blue"
+              />
+            </View>
           </View>
         )}
         {renderIf(this.state.showSubmitPaymentActivityIndicator)(
           <View style={styles.activityOverlayStyle}>
-            <ActivityIndicator
-              size="large"
-              animating={this.state.showSubmitPaymentActivityIndicator}
-              color="green"
-            />
+            <View style={styles.activityIndicatorContainer}>
+              <ActivityIndicator
+                size="large"
+                animating={this.state.showSubmitPaymentActivityIndicator}
+                color="green"
+              />
+            </View>
           </View>
         )}
       </View>
@@ -131,12 +135,25 @@ BraintreePaymentWebview.propTypes = {
 const styles = StyleSheet.create({
   activityOverlayStyle: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(150, 150, 150, .55)",
+    backgroundColor: 'rgba(150, 150, 150, .55)',
     marginHorizontal: 20,
     marginVertical: 60,
-    display: "flex",
-    justifyContent: "center",
-    alignContent: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
     borderRadius: 5
+  },
+  activityIndicatorContainer: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 50,
+    alignSelf: 'center',
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 3
+    },
+    shadowRadius: 5,
+    shadowOpacity: 1.0
   }
 });

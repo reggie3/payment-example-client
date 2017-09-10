@@ -6130,9 +6130,18 @@ var BraintreeHTML = function (_React$Component) {
             "Submit Purchase"
           )),
           (0, _renderIf2.default)(_this.state.currentPaymentStatus === "PURCHASE_FULFILLED")(_react2.default.createElement(
-            Button,
-            { onClick: _this.handleGoBackButtonSubmit },
-            "Return to Shop"
+            "div",
+            null,
+            _react2.default.createElement(
+              "div",
+              null,
+              "Thank you for your purchase! "
+            ),
+            _react2.default.createElement(
+              Button,
+              { onClick: _this.handleGoBackButtonSubmit },
+              "Return to Shop"
+            )
           )),
           (0, _renderIf2.default)(_this.state.currentPaymentStatus === "PURCHASE_REJECTED")(_react2.default.createElement(
             "div",
@@ -27721,6 +27730,8 @@ var _events = __webpack_require__(211);
 
 var _events2 = _interopRequireDefault(_events);
 
+var _config = __webpack_require__(215);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -27728,9 +27739,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// package unique prefix for all messages
-var UNIQUE_MESSAGE_PREFIX = "f251c210-e7c9-42fa-bae3-b9352ec3722a";
 
 // create string from passed object
 function createStringified(type, payload) {
@@ -27750,25 +27758,25 @@ var RNMessagesChannel = function (_EventEmitter) {
   }
 
   _createClass(RNMessagesChannel, [{
-    key: "sendJSON",
+    key: 'sendJSON',
     value: function sendJSON(json) {
-      window.postMessage(UNIQUE_MESSAGE_PREFIX + createStringified("json", json));
+      window.postMessage(_config.RN_MESSAGES_CHANNEL_PREFIX + createStringified('json', json));
     }
   }, {
-    key: "send",
+    key: 'send',
     value: function send(string) {
-      window.postMessage(UNIQUE_MESSAGE_PREFIX + createStringified("text", string));
+      window.postMessage(_config.RN_MESSAGES_CHANNEL_PREFIX + createStringified('text', string));
     }
   }, {
-    key: "emit",
+    key: 'emit',
     value: function emit(eventName, eventData, fromRN) {
-      _get(RNMessagesChannel.prototype.__proto__ || Object.getPrototypeOf(RNMessagesChannel.prototype), "emit", this).call(this, eventName, eventData);
+      _get(RNMessagesChannel.prototype.__proto__ || Object.getPrototypeOf(RNMessagesChannel.prototype), 'emit', this).call(this, eventName, eventData);
 
       if (fromRN) {
         return;
       }
 
-      window.postMessage(UNIQUE_MESSAGE_PREFIX + JSON.stringify({
+      window.postMessage(_config.RN_MESSAGES_CHANNEL_PREFIX + JSON.stringify({
         type: 'event',
         meta: {
           eventName: eventName
@@ -28724,6 +28732,17 @@ if (typeof Object.create === 'function') {
     ctor.prototype.constructor = ctor
   }
 }
+
+
+/***/ }),
+/* 215 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+const RN_MESSAGES_CHANNEL_PREFIX = 'f251c210-e7c9-42fa-bae3-b9352ec3722a';
+/* harmony export (immutable) */ __webpack_exports__["RN_MESSAGES_CHANNEL_PREFIX"] = RN_MESSAGES_CHANNEL_PREFIX;
+
 
 
 /***/ })
