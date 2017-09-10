@@ -51,10 +51,10 @@ class BraintreePaymentScreen extends React.Component {
       .then(response => {
         console.log({ response });
         if (response.type === "success") {
-          this.setState({ paymentAPIResponse: "purchaseSuccess" });
+          this.setState({ paymentAPIResponse: "PAYMENT_SUCCESS" });
           this.props.dispatch(actions.cartActions.emptyCart());
         } else {
-          this.setState({ paymentAPIResponse: "purchaseFailure" });
+          this.setState({ paymentAPIResponse: "PAYMENT_REJECTED" });
         }
       });
   };
@@ -87,6 +87,7 @@ class BraintreePaymentScreen extends React.Component {
             options={{
               creditCard: true
             }}
+            paymentAPIResponse={this.state.paymentAPIResponse}
           />
         )}
       </View>

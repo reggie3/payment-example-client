@@ -26,7 +26,6 @@ const Button = glamorous.div({
   textAlign: "center"
 });
 const PaymentBackground = glamorous.div({
-  backgroundColor: "#FED2F1",
   position: "absolute",
   top: 0,
   bottom: 0,
@@ -36,38 +35,8 @@ const PaymentBackground = glamorous.div({
   flexDirection: "column"
 });
 
-// from user Dryymoon at this Github thread
-// : https://github.com/facebook/react-native/issues/11594
-// fixes issue that caused postMessage to not reach WebView
-function awaitPostMessage() {
-  let isReactNativePostMessageReady = !!window.originalPostMessage;
-  const queue = [];
-  let currentPostMessageFn = function store(message) {
-    if (queue.length > 100) queue.shift();
-    queue.push(message);
-  };
-  if (!isReactNativePostMessageReady) {
-    // const originalPostMessage = window.postMessage;
-    Object.defineProperty(window, "postMessage", {
-      configurable: true,
-      enumerable: true,
-      get() {
-        return currentPostMessageFn;
-      },
-      set(fn) {
-        currentPostMessageFn = fn;
-        isReactNativePostMessageReady = true;
-        setTimeout(sendQueue, 0);
-      }
-    });
-  }
-
-  function sendQueue() {
-    while (queue.length > 0) window.postMessage(queue.shift());
-  }
-}
-
-// print something in an html element
+// print passed information in an html element; useful for debugging
+// since console.log and debug statements won't work in a conventional way
 const PrintElement = data => {
   if (typeof data === "object") {
     let el = document.createElement("pre");
@@ -88,26 +57,20 @@ class BraintreeHTML extends React.Component {
     };
   }
 
-  componentWillMount = () => {
-    // awaitPostMessage();
-  };
-
-  componentWillUnmount = () => {};
-
   componentDidMount = () => {
-    PrintElement("componentDidMount success");
+    // PrintElement("componentDidMount success");
     this.registerMessageListeners();
   };
 
   /*******************************
-   * add event listeners to receive events from parent
+   * register message listeners to receive events from parent
   */
   registerMessageListeners = () => {
-    PrintElement("registering message listeners");
+    // PrintElement("registering message listeners");
 
-    // should receive client token message almost immediately upon mounting
+    // will receive client token as a prop immediately upon mounting
     RNMessageChannel.on("TOKEN_RECEIVED", event => {
-      PrintElement(event);
+      //PrintElement(event);
       if (event.payload.options.creditCard) {
         this.createCreditCardUI(event.payload.clientToken);
       }
@@ -119,22 +82,25 @@ class BraintreeHTML extends React.Component {
     // when the call is made to the braintree purchasing server
     // used to show the user some feedback that the purchase is in process
     RNMessageChannel.on("PURCHASE_PENDING", event => {
-      PrintElement("PURCHASE_PENDING");
+      // PrintElement("PURCHASE_PENDING");
+      this.setState({ currentPaymentStatus: "PURCHASE_FULFILLED" });
     });
 
     // when the purchase succeeds
     // used to show the user some feedback that the purchase has completed successfully
     RNMessageChannel.on("PURCHASE_FULFILLED", event => {
-      PrintElement("PURCHASE_FULFILLED");
+      //PrintElement("PURCHASE_FULFILLED");
+      this.setState({ currentPaymentStatus: "PURCHASE_FULFILLED" });
     });
 
     // when the purchase succeeds
     // used to show the user some feedback that the purchase has failed to complete
     RNMessageChannel.on("PURCHASE_REJECTED", event => {
+      this.setState({ currentPaymentStatus: "PURCHASE_REJECTED" });
       PrintElement("PURCHASE_REJECTED");
     });
 
-    PrintElement("registering message listeners - completed");
+    // PrintElement("registering message listeners - completed");
   };
 
   /*******************************
@@ -148,7 +114,7 @@ class BraintreeHTML extends React.Component {
    * create the Braintree UI element
   */
   createCreditCardUI = clientToken => {
-    PrintElement(`createCreditCardUI: ${clientToken}`);
+    //PrintElement(`createCreditCardUI: ${clientToken}`);
 
     dropin
       .create({
@@ -156,7 +122,6 @@ class BraintreeHTML extends React.Component {
         container: "#dropin-container"
       })
       .then(instance => {
-        PrintElement(instance);
         this.setState({ instance });
       })
       .catch(function(err) {
@@ -172,6 +137,7 @@ class BraintreeHTML extends React.Component {
   */
   handleSubmitPurchaseButtonClicked = () => {
     // PrintElement(`handleSubmitPurchaseButtonClicked: ${this.state.instance}`);
+    this.setState({ currentPaymentStatus: "PAYMENT_PENDING" });
 
     // send a message to the parent WebView so that it
     // can display feedback to user
@@ -203,6 +169,10 @@ class BraintreeHTML extends React.Component {
     });
   };
 
+  handleGoBackButtonSubmit = () => {
+    RNMessageChannel.emit("GO_BACK");
+  };
+
   render = () => {
     return (
       <PaymentBackground
@@ -214,12 +184,29 @@ class BraintreeHTML extends React.Component {
           <div id="dropin-container" />
         </DropInContainer>
         <ButtonContainer>
-          <Button
-            id="submit-button"
-            onClick={this.handleSubmitPurchaseButtonClicked}
-          >
-            Submit Purchase
-          </Button>
+          {renderIf(this.state.currentPaymentStatus === null)(
+            <Button
+              id="submit-button"
+              onClick={this.handleSubmitPurchaseButtonClicked}
+            >
+              Submit Purchase
+            </Button>
+          )}
+          {renderIf(this.state.currentPaymentStatus === "PURCHASE_FULFILLED")(
+            <Button onClick={this.handleGoBackButtonSubmit}>
+              Return to Shop
+            </Button>
+          )}
+          {renderIf(this.state.currentPaymentStatus === "PURCHASE_REJECTED")(
+            <div>
+              <div>
+                There was a problem with your purchase, please try again
+              </div>
+              <Button onClick={this.handleGoBackButtonSubmit}>
+                Return to Shop
+              </Button>
+            </div>
+          )}
           <div id="messages" />
         </ButtonContainer>
       </PaymentBackground>

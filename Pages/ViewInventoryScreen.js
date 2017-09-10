@@ -5,6 +5,7 @@ import { View, FlatList, Text, Button } from "react-native";
 import Cart from "../Components/Cart";
 import InventoryListItem from "../Components/InventoryListItem";
 
+
 class ViewInventoryScreen extends React.Component {
   constructor(props) {
     super(props);

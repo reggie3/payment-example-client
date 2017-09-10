@@ -10,10 +10,6 @@ import { AppLoading, Asset, Font } from "expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
-import PendingModal from "./Components/PendingModal";
-import ErrorModal from "./Components/ErrorModal";
-import SuccessModal from "./Components/SuccessModal";
-import PaymentModal from "./Components/PaymentModal";
 import BraintreePaymentScreen from "./Pages/BraintreePaymentScreen";
 import ViewInventory from "./Pages/ViewInventoryScreen";
 import { connect } from "react-redux";
@@ -68,20 +64,7 @@ class AppComponent extends React.Component {
             >
               {screens[this.props.nav.currentScreen].screen}
             </View>
-            <PendingModal
-              visible={this.props.showPendingDialog.open}
-              message={this.props.showPendingDialog.message}
-            />
-            <ErrorModal
-              visible={this.props.showErrorDialog.open}
-              message={this.props.showErrorDialog.message}
-              setVisible={this.closeErrorDialog.bind(this)}
-            />
-            <SuccessModal
-              visible={this.props.showSuccessDialog.open}
-              message={this.props.showSuccessDialog.message}
-              setVisible={this.closeSuccessDialog.bind(this)}
-            />
+           
           </View>
         </Provider>
       );
@@ -131,14 +114,14 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
   return Object.assign(
     {},
-    {
-      appState: state.appState,
+     {
+      /* appState: state.appState,
       showPendingDialog: state.modals.showPendingDialog,
       showErrorDialog: state.modals.showErrorDialog,
       showSuccessDialog: state.modals.showSuccessDialog,
-      showPaymentModal: state.modals.showPaymentModal,
+      showPaymentModal: state.modals.showPaymentModal, */
       nav: state.nav
-    }
+    } 
   );
 };
 const App = connectWithStore(store, AppComponent, mapStateToProps);

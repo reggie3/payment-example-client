@@ -5972,7 +5972,6 @@ var Button = _glamorous2.default.div({
   textAlign: "center"
 });
 var PaymentBackground = _glamorous2.default.div({
-  backgroundColor: "#FED2F1",
   position: "absolute",
   top: 0,
   bottom: 0,
@@ -5982,40 +5981,8 @@ var PaymentBackground = _glamorous2.default.div({
   flexDirection: "column"
 });
 
-// from user Dryymoon at this Github thread
-// : https://github.com/facebook/react-native/issues/11594
-// fixes issue that caused postMessage to not reach WebView
-function awaitPostMessage() {
-  var isReactNativePostMessageReady = !!window.originalPostMessage;
-  var queue = [];
-  var currentPostMessageFn = function store(message) {
-    if (queue.length > 100) queue.shift();
-    queue.push(message);
-  };
-  if (!isReactNativePostMessageReady) {
-    // const originalPostMessage = window.postMessage;
-    Object.defineProperty(window, "postMessage", {
-      configurable: true,
-      enumerable: true,
-      get: function get() {
-        return currentPostMessageFn;
-      },
-      set: function set(fn) {
-        currentPostMessageFn = fn;
-        isReactNativePostMessageReady = true;
-        setTimeout(sendQueue, 0);
-      }
-    });
-  }
-
-  function sendQueue() {
-    while (queue.length > 0) {
-      window.postMessage(queue.shift());
-    }
-  }
-}
-
-// print something in an html element
+// print passed information in an html element; useful for debugging
+// since console.log and debug statements won't work in a conventional way
 var PrintElement = function PrintElement(data) {
   if ((typeof data === "undefined" ? "undefined" : _typeof(data)) === "object") {
     var el = document.createElement("pre");
@@ -6036,23 +6003,17 @@ var BraintreeHTML = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (BraintreeHTML.__proto__ || Object.getPrototypeOf(BraintreeHTML)).call(this));
 
-    _this.componentWillMount = function () {
-      // awaitPostMessage();
-    };
-
-    _this.componentWillUnmount = function () {};
-
     _this.componentDidMount = function () {
-      PrintElement("componentDidMount success");
+      // PrintElement("componentDidMount success");
       _this.registerMessageListeners();
     };
 
     _this.registerMessageListeners = function () {
-      PrintElement("registering message listeners");
+      // PrintElement("registering message listeners");
 
-      // should receive client token message almost immediately upon mounting
+      // will receive client token as a prop immediately upon mounting
       _reactNativeWebviewMessaging2.default.on("TOKEN_RECEIVED", function (event) {
-        PrintElement(event);
+        //PrintElement(event);
         if (event.payload.options.creditCard) {
           _this.createCreditCardUI(event.payload.clientToken);
         }
@@ -6064,22 +6025,25 @@ var BraintreeHTML = function (_React$Component) {
       // when the call is made to the braintree purchasing server
       // used to show the user some feedback that the purchase is in process
       _reactNativeWebviewMessaging2.default.on("PURCHASE_PENDING", function (event) {
-        PrintElement("PURCHASE_PENDING");
+        // PrintElement("PURCHASE_PENDING");
+        _this.setState({ currentPaymentStatus: "PURCHASE_FULFILLED" });
       });
 
       // when the purchase succeeds
       // used to show the user some feedback that the purchase has completed successfully
       _reactNativeWebviewMessaging2.default.on("PURCHASE_FULFILLED", function (event) {
-        PrintElement("PURCHASE_FULFILLED");
+        //PrintElement("PURCHASE_FULFILLED");
+        _this.setState({ currentPaymentStatus: "PURCHASE_FULFILLED" });
       });
 
       // when the purchase succeeds
       // used to show the user some feedback that the purchase has failed to complete
       _reactNativeWebviewMessaging2.default.on("PURCHASE_REJECTED", function (event) {
+        _this.setState({ currentPaymentStatus: "PURCHASE_REJECTED" });
         PrintElement("PURCHASE_REJECTED");
       });
 
-      PrintElement("registering message listeners - completed");
+      // PrintElement("registering message listeners - completed");
     };
 
     _this.createPaypalUI = function (clientToken) {
@@ -6087,13 +6051,12 @@ var BraintreeHTML = function (_React$Component) {
     };
 
     _this.createCreditCardUI = function (clientToken) {
-      PrintElement("createCreditCardUI: " + clientToken);
+      //PrintElement(`createCreditCardUI: ${clientToken}`);
 
       _braintreeWebDropIn2.default.create({
         authorization: clientToken,
         container: "#dropin-container"
       }).then(function (instance) {
-        PrintElement(instance);
         _this.setState({ instance: instance });
       }).catch(function (err) {
         // Handle any errors that might've occurred when creating Drop-in
@@ -6106,6 +6069,7 @@ var BraintreeHTML = function (_React$Component) {
 
     _this.handleSubmitPurchaseButtonClicked = function () {
       // PrintElement(`handleSubmitPurchaseButtonClicked: ${this.state.instance}`);
+      _this.setState({ currentPaymentStatus: "PAYMENT_PENDING" });
 
       // send a message to the parent WebView so that it
       // can display feedback to user
@@ -6137,6 +6101,10 @@ var BraintreeHTML = function (_React$Component) {
       });
     };
 
+    _this.handleGoBackButtonSubmit = function () {
+      _reactNativeWebviewMessaging2.default.emit("GO_BACK");
+    };
+
     _this.render = function () {
       return _react2.default.createElement(
         PaymentBackground,
@@ -6153,14 +6121,33 @@ var BraintreeHTML = function (_React$Component) {
         _react2.default.createElement(
           ButtonContainer,
           null,
-          _react2.default.createElement(
+          (0, _renderIf2.default)(_this.state.currentPaymentStatus === null)(_react2.default.createElement(
             Button,
             {
               id: "submit-button",
               onClick: _this.handleSubmitPurchaseButtonClicked
             },
             "Submit Purchase"
-          ),
+          )),
+          (0, _renderIf2.default)(_this.state.currentPaymentStatus === "PURCHASE_FULFILLED")(_react2.default.createElement(
+            Button,
+            { onClick: _this.handleGoBackButtonSubmit },
+            "Return to Shop"
+          )),
+          (0, _renderIf2.default)(_this.state.currentPaymentStatus === "PURCHASE_REJECTED")(_react2.default.createElement(
+            "div",
+            null,
+            _react2.default.createElement(
+              "div",
+              null,
+              "There was a problem with your purchase, please try again"
+            ),
+            _react2.default.createElement(
+              Button,
+              { onClick: _this.handleGoBackButtonSubmit },
+              "Return to Shop"
+            )
+          )),
           _react2.default.createElement("div", { id: "messages" })
         )
       );
@@ -6173,7 +6160,7 @@ var BraintreeHTML = function (_React$Component) {
   }
 
   /*******************************
-   * add event listeners to receive events from parent
+   * register message listeners to receive events from parent
   */
 
 

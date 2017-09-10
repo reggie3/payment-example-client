@@ -1,14 +1,17 @@
 import React from "react";
-import { View } from "react-native";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { WebView } from "./rnwm-webview";
 import PropTypes from "prop-types";
+import renderIf from "render-if";
 
 export default class BraintreePaymentWebview extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      paymentAPIResponse: null
+      paymentAPIResponse: null,
+      showGetNonceActivityIndicator: false,
+      showSubmitPaymentActivityIndicator: false
     };
   }
   componentDidMount() {
@@ -21,20 +24,23 @@ export default class BraintreePaymentWebview extends React.Component {
     const { messagesChannel } = this.webview;
 
     messagesChannel.on("RETRIEVE_NONCE_PENDING", event => {
+      this.setState({ showGetNonceActivityIndicator: true });
       console.log("RETRIEVE_NONCE_PENDING");
     });
 
     messagesChannel.on("RETRIEVE_NONCE_FULFILLED", event => {
       console.log("RETRIEVE_NONCE_FULFILLED");
-      debugger
+      this.setState({ showGetNonceActivityIndicator: false });
+      this.setState({ showSubmitPaymentActivityIndicator: true });
       this.props.nonceObtainedCallback(event.payload.response.nonce);
     });
 
     messagesChannel.on("RETRIEVE_NONCE_REJECTED", event => {
       console.log("RETRIEVE_NONCE_REJECTED");
+      this.setState({ showGetNonceActivityIndicator: false });
     });
 
-    messagesChannel.on("goBack", () => {
+    messagesChannel.on("GO_BACK", () => {
       this.props.navigationBackCallback();
     });
   };
@@ -53,11 +59,13 @@ export default class BraintreePaymentWebview extends React.Component {
   // handle purchase responses that parent component sends after making purchase API call
   handlePurchaseResponse = response => {
     console.log("handlePurchaseResponse");
-    if (response === "purchaseSuccess") {
+    if (response === "PAYMENT_SUCCESS") {
       console.log("emitting purchaseSuccess");
-      this.webview.emit("purchaseSuccess");
+      this.setState({ showSubmitPaymentActivityIndicator: false });
+      this.webview.emit("PURCHASE_FULFILLED");
     } else {
-      this.webview.emit("error");
+      this.setState({ showSubmitPaymentActivityIndicator: false });
+      this.webview.emit("PURCHASE_REJECTED");
     }
   };
 
@@ -74,16 +82,39 @@ export default class BraintreePaymentWebview extends React.Component {
     return (
       <View
         style={{
-          flex: 1,
-          backgroundColor: `blue`
+          flex: 1
         }}
       >
-        <WebView
-          onLoad={this.sendClientTokenToHTML}
-          source={require("../dist/index.html")}
-          style={{ flex: 1 }}
-          ref={component => (this.webview = component)}
-        />
+        <View
+          style={{
+            flex: 1
+          }}
+        >
+          <WebView
+            onLoad={this.sendClientTokenToHTML}
+            source={require("../dist/index.html")}
+            style={{ flex: 1 }}
+            ref={component => (this.webview = component)}
+          />
+        </View>
+        {renderIf(this.state.showGetNonceActivityIndicator)(
+          <View style={styles.activityOverlayStyle}>
+            <ActivityIndicator
+              size="large"
+              animating={this.state.showGetNonceActivityIndicator}
+              color="yellow"
+            />
+          </View>
+        )}
+        {renderIf(this.state.showSubmitPaymentActivityIndicator)(
+          <View style={styles.activityOverlayStyle}>
+            <ActivityIndicator
+              size="large"
+              animating={this.state.showSubmitPaymentActivityIndicator}
+              color="green"
+            />
+          </View>
+        )}
       </View>
     );
   }
@@ -92,11 +123,20 @@ export default class BraintreePaymentWebview extends React.Component {
 BraintreePaymentWebview.propTypes = {
   options: PropTypes.object,
   clientToken: PropTypes.string.isRequired,
-  // paymentAPIResponse: PropTypes.string.isRequired,
+  paymentAPIResponse: PropTypes.string.isRequired,
   nonceObtainedCallback: PropTypes.func.isRequired,
   navigationBackCallback: PropTypes.func
 };
 
-BraintreePaymentWebview.defaultProps = {
-  options: {}
-};
+const styles = StyleSheet.create({
+  activityOverlayStyle: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(150, 150, 150, .55)",
+    marginHorizontal: 20,
+    marginVertical: 60,
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+    borderRadius: 5
+  }
+});
