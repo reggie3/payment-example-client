@@ -1,9 +1,6 @@
 import React from "react";
-import { Text, View, Button } from "react-native";
+import { View} from "react-native";
 import { WebView } from "./rnwm-webview";
-import * as brainTreeUtils from "../utils/braintreeUtils";
-import { connect } from "react-redux";
-import actions from "../actions/actions";
 import PropTypes from "prop-types";
 
 export default class BraintreePaymentWebview extends React.Component {
@@ -27,7 +24,6 @@ export default class BraintreePaymentWebview extends React.Component {
       if (event.payload.type === "success") {
         // call the parent's callback to make parent call Braintree API
         this.webview.emit("purchasing");
-        debugger;
         this.props.nonceObtainedCallback(event.payload.response.nonce);
       } else {
         this.webview.emit("purchaseFailure");
