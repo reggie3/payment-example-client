@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { WebView } from './rnwm-webview';
+import { WebView } from 'react-native-webview-messaging/WebView';
 import PropTypes from 'prop-types';
 import renderIf from 'render-if';
 

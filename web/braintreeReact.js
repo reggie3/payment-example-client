@@ -6,7 +6,7 @@ import renderIf from "render-if";
 import { Spinner } from "react-activity";
 import dropin from "braintree-web-drop-in";
 import glamorous from "glamorous";
-import RNMessageChannel from "./react-native-webview-messaging";
+import RNMessageChannel from "react-native-webview-messaging";
 const util = require("util");
 
 const DropInContainer = glamorous.div({
